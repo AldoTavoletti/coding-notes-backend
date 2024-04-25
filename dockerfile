@@ -17,7 +17,7 @@ RUN apt-get update && \
         zip \
         curl \
         && docker-php-ext-configure gd --with-freetype --with-jpeg \
-        && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql zip \
+        && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql mysqli zip \
         && a2enmod rewrite
 
 # Set recommended PHP.ini settings
