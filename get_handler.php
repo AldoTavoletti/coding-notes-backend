@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 function get_all_folders_and_notes($conn){
 

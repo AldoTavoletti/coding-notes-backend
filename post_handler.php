@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 
 function add_folder($conn, $name, $color, $userID)
