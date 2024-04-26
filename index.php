@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 // Allow from any origin
 if (isset($_SERVER['HTTP_ORIGIN'])) {
@@ -17,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
     exit(0);
 }
-session_start();
 
 
 require_once "db_connection.php";
