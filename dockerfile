@@ -28,7 +28,6 @@ RUN { \
         echo 'opcache.revalidate_freq=60'; \
         echo 'opcache.fast_shutdown=1'; \
         echo 'session.save_handler=files'; \
-        echo 'session.save_path="C:\xampp\tmp"'; \
         echo 'session.use_strict_mode=0'; \
         echo 'session.use_cookies=1'; \
         echo 'session.use_only_cookies=1'; \
