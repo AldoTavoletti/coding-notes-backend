@@ -10,8 +10,11 @@ RUN a2enmod rewrite
 # Install PHP session extension
 RUN docker-php-ext-install session
 
+# Copy PHP configuration file with custom session settings
+COPY php.ini /usr/local/etc/php/conf.d/php.ini
+
 # Copy your PHP files into the container
-COPY . /var/www/html
+COPY src/ /var/www/html
 
 # Set permissions for Apache
 RUN chown -R www-data:www-data /var/www/html
