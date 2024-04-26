@@ -14,7 +14,7 @@ RUN docker-php-ext-install session
 COPY php.ini /usr/local/etc/php/conf.d/php.ini
 
 # Copy your PHP files into the container
-COPY src/ /var/www/html
+COPY . /var/www/html
 
 # Set permissions for Apache
 RUN chown -R www-data:www-data /var/www/html
