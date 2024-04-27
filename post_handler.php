@@ -101,7 +101,7 @@ function get_google_tokens($code)
     // set all the necessary data
     $client_id = $_ENV["GOOGLE_CLIENT_ID"];
     $client_secret = $_ENV["GOOGLE_CLIENT_SECRET"];
-    $redirect_uri = 'https://codingnotes-six.vercel.app';
+    $redirect_uri = $_SERVER['HTTP_ORIGIN'];
     $grant_type = 'authorization_code';
 
     // Build request body data
