@@ -2,10 +2,10 @@
 
 function get_all_folders_and_notes($conn){
 
-    // $folderID = null;
+    $folderID = null;
 
     // get the user's folders
-    $stmt = $conn->prepare("SELECT * FROM folders f INNER JOIN notes n ON n.folderID=f.folderID WHERE f.userID=? ORDER BY f.folderID");
+    $stmt = $conn->prepare("SELECT * FROM folders WHERE userID=?");
     $stmt->bind_param("i", $_SESSION["userID"]);
     $stmt->execute();
 
@@ -15,27 +15,27 @@ function get_all_folders_and_notes($conn){
     // fetch the whole result into an associative array
     $folders = $result->fetch_all(MYSQLI_ASSOC);
 
-    // // get all the notes of the user's folders. The statement is prepared only once.
-    // $stmt = $conn->prepare("SELECT * FROM notes WHERE folderID=?");
+    // get all the notes of the user's folders. The statement is prepared only once.
+    $stmt = $conn->prepare("SELECT * FROM notes WHERE folderID=?");
 
-    // // $folderID doesn't have a value now, but it gets assigned a value in the for loop. When the statement gets executed, the compiler looks for the binded parameters and uses the current value it is assigned to.
-    // $stmt->bind_param("i", $folderID);
+    // $folderID doesn't have a value now, but it gets assigned a value in the for loop. When the statement gets executed, the compiler looks for the binded parameters and uses the current value it is assigned to.
+    $stmt->bind_param("i", $folderID);
 
-    // for ($i = 0; $i < count($folders); $i++) {
+    for ($i = 0; $i < count($folders); $i++) {
 
-    //     // assign the current folder's ID to $folderID
-    //     $folderID = $folders[$i]["folderID"];
+        // assign the current folder's ID to $folderID
+        $folderID = $folders[$i]["folderID"];
 
-    //     $stmt->execute();
-    //     $result = $stmt->get_result();
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    //     // fetch the whole result into an associative array
-    //     $notes = $result->fetch_all(MYSQLI_ASSOC);
+        // fetch the whole result into an associative array
+        $notes = $result->fetch_all(MYSQLI_ASSOC);
 
-    //     // insert the notes associative array in a field related to the parent folder
-    //     $folders[$i]["notes"] = $notes;
+        // insert the notes associative array in a field related to the parent folder
+        $folders[$i]["notes"] = $notes;
 
-    // }
+    }
 
     return $folders;
 
