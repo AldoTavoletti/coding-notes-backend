@@ -250,7 +250,8 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
     // decode tokens
     $tokensDecoded = json_decode($tokens);
-        echo $tokensDecoded;
+            echo var_dump($tokensDecoded);
+
 
     // verify the id_token and obtain the sub
     $tokenInfo = oauth_tokeninfo_call($tokensDecoded->id_token);
