@@ -101,7 +101,7 @@ function get_google_tokens($code)
     // set all the necessary data
     $client_id = '225902902685-nfk9t53m1894vf4rmi4jj3fpp3o913cp.apps.googleusercontent.com';
     $client_secret = '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';
-    $redirect_uri = 'http://localhost:3000';
+    $redirect_uri = 'https://codingnotes-six.vercel.app';
     $grant_type = 'authorization_code';
 
     // Build request body data
@@ -250,9 +250,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
     // decode tokens
     $tokensDecoded = json_decode($tokens);
-            echo var_dump($tokensDecoded);
-
-
+    echo var_dump($tokensDecoded);
     // verify the id_token and obtain the sub
     $tokenInfo = oauth_tokeninfo_call($tokensDecoded->id_token);
 
