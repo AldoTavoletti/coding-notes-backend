@@ -5,7 +5,7 @@ function get_all_folders_and_notes($conn){
     // $folderID = null;
 
     // get the user's folders
-    $stmt = $conn->prepare("SELECT * FROM folders f INNER JOIN notes n ON n.folderID=f.folderID WHERE userID=?");
+    $stmt = $conn->prepare("SELECT * FROM folders f INNER JOIN notes n ON n.folderID=f.folderID WHERE f.userID=? ORDER BY f.folderID");
     $stmt->bind_param("i", $_SESSION["userID"]);
     $stmt->execute();
 
