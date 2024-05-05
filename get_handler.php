@@ -92,11 +92,11 @@ function token_is_valid($conn, string $token): bool
 }
 function check_logged_in($conn){
 
-    if (isset($_SESSION["userID"])) /* if the session variable is set, it means the user is still logged in */ {
+    // if (isset($_SESSION["userID"])) /* if the session variable is set, it means the user is still logged in */ {
 
-        echo json_encode(array("message" => "The user is logged in!", "code" => 200, "userID" => $_SESSION["userID"]));
-        return true;
-    }
+    //     echo json_encode(array("message" => "The user is logged in!", "code" => 200, "userID" => $_SESSION["userID"]));
+    //     return true;
+    // }
 
 // check the remember_me in cookie
     $token = filter_input(INPUT_COOKIE, 'remember_me', FILTER_SANITIZE_STRING);
