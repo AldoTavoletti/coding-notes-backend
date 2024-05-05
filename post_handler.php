@@ -4,7 +4,7 @@
 function add_folder($conn, $name, $color, $userID)
 {
 
-    //prepare the statement
+    //prepare the stmt
     $stmt = $conn->prepare("INSERT INTO folders (folderName, color, userID) VALUES (?,?,?)");
 
     // bind the parameters
@@ -18,7 +18,7 @@ function add_folder($conn, $name, $color, $userID)
 function add_note($conn, $title, $folderID)
 {
 
-    //prepare the statement
+    //prepare the stmt
     $stmt = $conn->prepare("INSERT INTO notes (title, folderID) VALUES (?,?)");
 
     // bind the parameters
@@ -51,7 +51,108 @@ function username_exists($conn, $username)
 
 }
 
-function signup($conn, $username, $password)
+function generate_tokens(): array
+{
+    $selector = bin2hex(random_bytes(16));
+    $validator = bin2hex(random_bytes(32));
+
+    return [$selector, $validator, $selector . ':' . $validator];
+}
+
+function parse_token(string $token): ?array
+{
+    $parts = explode(':', $token);
+
+    if ($parts && count($parts) === 2) {
+        return [$parts[0], $parts[1]];
+    }
+    return null;
+}
+
+function insert_user_token($conn, int $userID, string $selector, string $hashedValidator, string $expiry): bool
+{
+
+    $stmt = $conn->prepare('INSERT INTO user_tokens(userID, selector, hashed_validator, expiry) VALUES(?, ?, ?, ?)');
+    $stmt->bind_param("isss", $userID, $selector, $hashedValidator, $expiry);
+
+    return $stmt->execute();
+}
+
+function find_user_token_by_selector($conn, string $selector)
+{
+
+
+    $stmt = $conn->prepare('SELECT *
+                FROM user_tokens
+                WHERE selector = ? AND
+                    expiry >= now()
+                LIMIT 1');
+    $stmt->bind_param('s', $selector);
+
+    $stmt->execute();
+
+    return $stmt->get_result()->fetch_assoc();
+}
+function delete_user_token($conn, int $userID): bool
+{
+    $stmt = $conn->prepare('DELETE FROM user_tokens WHERE userID = ?');
+    $stmt->bind_param('i', $userID);
+
+    return $stmt->execute();
+}
+
+function find_user_by_token($conn, string $token)
+{
+    $tokens = parse_token($token);
+
+    if (!$tokens) {
+        return null;
+    }
+
+
+    $stmt = $conn->prepare('SELECT users.userID, username
+            FROM users
+            INNER JOIN user_tokens ON userID = users.id
+            WHERE selector = ? AND
+                expiry > now()
+            LIMIT 1');
+    $stmt->bind_param('s', $tokens[0]);
+    $stmt->execute();
+
+    return $stmt->get_result()->fetch_assoc(); 
+}
+
+function token_is_valid($conn,string $token): bool { 
+    // parse the token to get the selector and validator 
+    [$selector, $validator] = parse_token($token);
+
+$tokens = find_user_token_by_selector($conn, $selector);
+if (!$tokens) {
+    return false;
+}
+
+return password_verify($validator, $tokens['hashed_validator']);
+}
+
+function remember_me($conn, int $userID, int $day = 30)
+{
+    [$selector, $validator, $token] = generate_tokens();
+
+    // remove all existing token associated with the user id
+    delete_user_token($conn,$userID);
+
+    // set expiration date
+    $expired_seconds = time() + 60 * 60 * 24 * $day;
+
+    // insert a token to the database
+    $hash_validator = password_hash($validator, PASSWORD_DEFAULT);
+    $expiry = date('Y-m-d H:i:s', $expired_seconds);
+
+    if (insert_user_token($conn, $userID, $selector, $hash_validator, $expiry)) {
+        setcookie('remember_me', $token, $expired_seconds);
+    }
+}
+function signup($conn, $username, $password, $remember)
 {
 
     // hash the passowrd
@@ -76,7 +177,7 @@ function signup($conn, $username, $password)
 
 }
 
-function login($userID, $password, $passwordDB)
+function login($userID, $password, $passwordDB, $remember)
 {
 
     if (password_verify($password, $passwordDB)) /* if the password is correct */ {
@@ -214,7 +315,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
     echo json_encode(array("message" => "Note created!", "code" => 200));
 
 
-} else if (isset($arr["username"], $arr["password"]) && $arr["action"] === "signup") {
+} else if (isset($arr["action"]) && $arr["action"] === "signup") {
 
     if (username_exists($conn, $arr["username"])) /* if there is already a record with this username */ {
 
@@ -222,19 +323,19 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
     } else /* if the username is valid */ {
 
-        signup($conn, $arr["username"], $arr["password"]);
+        signup($conn, $arr["username"], $arr["password"], $arr["remember"]);
 
         echo json_encode(array("message" => "Signed up!", 'code' => 200));
 
 
     }
 
-} else if (isset($arr["username"], $arr["password"]) && $arr["action"] === "login") {
+} else if (isset($arr["action"]) && $arr["action"] === "login") {
 
     $result = username_exists($conn, $arr["username"]);
     if (isset($result["password"], $result["userID"])) /* if a user with this username exists */ {
 
-        login($result["userID"], $arr["password"], $result["password"]);
+        login($result["userID"], $arr["password"], $result["password"], $arr["remember"]);
 
     } else {
 
@@ -250,7 +351,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
     // decode tokens
     $tokensDecoded = json_decode($tokens);
-    
+
     // verify the id_token and obtain the sub
     $tokenInfo = oauth_tokeninfo_call($tokensDecoded->id_token);
 
@@ -280,3 +381,4 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
     echo json_encode(array("message" => "Access granted!", "code" => 200));
 
 }
+

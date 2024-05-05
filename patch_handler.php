@@ -67,3 +67,4 @@ if (isset($arr["content"])) /* if the content of the note has to be patched */ {
     echo json_encode(array("message" => "Folder updated!", "code" => 200));
 
 }
+
