@@ -101,38 +101,7 @@ function delete_user_token($conn, int $userID): bool
     return $stmt->execute();
 }
 
-function find_user_by_token($conn, string $token)
-{
-    $tokens = parse_token($token);
 
-    if (!$tokens) {
-        return null;
-    }
-
-
-    $stmt = $conn->prepare('SELECT users.userID, username
-            FROM users
-            INNER JOIN user_tokens ON userID = users.id
-            WHERE selector = ? AND
-                expiry > now()
-            LIMIT 1');
-    $stmt->bind_param('s', $tokens[0]);
-    $stmt->execute();
-
-    return $stmt->get_result()->fetch_assoc(); 
-}
-
-function token_is_valid($conn,string $token): bool { 
-    // parse the token to get the selector and validator 
-    [$selector, $validator] = parse_token($token);
-
-$tokens = find_user_token_by_selector($conn, $selector);
-if (!$tokens) {
-    return false;
-}
-
-return password_verify($validator, $tokens['hashed_validator']);
-}
 
 function remember_me($conn, int $userID, int $day = 30)
 {

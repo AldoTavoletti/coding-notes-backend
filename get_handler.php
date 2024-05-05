@@ -57,18 +57,61 @@ function get_single_note($conn){
     return $note;
 
 }
+function find_user_by_token($conn, string $token)
+{
+    $tokens = parse_token($token);
 
-function check_logged_in(){
+    if (!$tokens) {
+        return null;
+    }
+
+
+    $stmt = $conn->prepare('SELECT users.userID, username
+            FROM users
+            INNER JOIN user_tokens ON userID = users.id
+            WHERE selector = ? AND
+                expiry > now()
+            LIMIT 1');
+    $stmt->bind_param('s', $tokens[0]);
+    $stmt->execute();
+
+    return $stmt->get_result()->fetch_assoc();
+}
+
+function token_is_valid($conn, string $token): bool
+{
+    // parse the token to get the selector and validator 
+    [$selector, $validator] = parse_token($token);
+
+    $tokens = find_user_token_by_selector($conn, $selector);
+    if (!$tokens) {
+        return false;
+    }
+
+    return password_verify($validator, $tokens['hashed_validator']);
+}
+function check_logged_in($conn){
 
     if (isset($_SESSION["userID"])) /* if the session variable is set, it means the user is still logged in */ {
 
         echo json_encode(array("message" => "The user is logged in!", "code" => 200, "userID" => $_SESSION["userID"]));
-
-    } else {
-
-        die(json_encode(array("message" => "The user is not logged in!", "code" => 403)));
-
+        return true;
     }
+
+// check the remember_me in cookie
+    $token = filter_input(INPUT_COOKIE, 'remember_me', FILTER_SANITIZE_STRING);
+
+    if ($token && token_is_valid($conn, $token)) {
+
+        $user = find_user_by_token($conn, $token);
+
+        if ($user) {
+            $_SESSION["userID"] = $user["userID"];
+            echo json_encode(array("message" => "The user is logged in!", "code" => 200, "userID" => $_SESSION["userID"]));
+            return true;
+        }
+    } 
+        die(json_encode(array("message" => "The user is not logged in!", "code" => 403)));
 
 }
 
@@ -104,7 +147,7 @@ if (isset($_GET["retrieve"]) && $_GET["retrieve"] === "all") {
 
 } else if (isset($_GET["check"]) && $_GET["check"] === "login") {
 
-    check_logged_in();
+    check_logged_in($conn);
 
 } else if (isset($_GET["logout"]) && $_GET["logout"] === "true") {
 
