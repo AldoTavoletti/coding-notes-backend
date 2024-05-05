@@ -177,14 +177,16 @@ function signup($conn, $username, $password, $remember)
 
 }
 
-function login($userID, $password, $passwordDB, $remember)
+function login($conn, $userID, $password, $passwordDB, $remember)
 {
 
     if (password_verify($password, $passwordDB)) /* if the password is correct */ {
 
         // save the userID in a session
         $_SESSION["userID"] = $userID;
-
+        if ($remember) {
+            remember_me($conn, $userID);
+        }
         echo json_encode(array("message" => "Access granted!", "code" => 200));
 
     } else {
@@ -335,7 +337,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
     $result = username_exists($conn, $arr["username"]);
     if (isset($result["password"], $result["userID"])) /* if a user with this username exists */ {
 
-        login($result["userID"], $arr["password"], $result["password"], $arr["remember"]);
+        login($conn, $result["userID"], $arr["password"], $result["password"], $arr["remember"]);
 
     } else {
 
