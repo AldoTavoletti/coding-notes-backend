@@ -105,13 +105,7 @@ function find_user_token_by_selector($conn, string $selector)
 
     return $stmt->get_result()->fetch_assoc();
 }
-function delete_user_token($conn, int $userID): bool
-{
-    $stmt = $conn->prepare('DELETE FROM user_tokens WHERE userID = ?');
-    $stmt->bind_param('i', $userID);
 
-    return $stmt->execute();
-}
 function parse_token(string $token): ?array
 {
     $parts = explode(':', $token);

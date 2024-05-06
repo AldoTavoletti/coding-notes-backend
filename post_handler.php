@@ -91,6 +91,14 @@ function remember_me($conn, int $userID, int $day = 30)
         setcookie('remember_me', $token, ['expires' =>$expired_seconds,'samesite'=>'None', 'domain'=>".coding-notes-backend.onrender.com", "httponly"=>1,"secure"=>1]);
     }
 }
+
+function delete_user_token($conn, int $userID): bool
+{
+    $stmt = $conn->prepare('DELETE FROM user_tokens WHERE userID = ?');
+    $stmt->bind_param('i', $userID);
+
+    return $stmt->execute();
+}
 function signup($conn, $username, $password, $remember)
 {
 
