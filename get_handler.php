@@ -86,9 +86,12 @@ function token_is_valid($conn, string $token): bool
     $tokens = find_user_token_by_selector($conn, $selector);
     if (!$tokens) {
         return false;
-    }
+    }else if (password_verify($validator, $tokens['hashed_validator'])) {
+        return $tokens["userID"];
 
-    return password_verify($validator, $tokens['hashed_validator']);
+    }
+    return false;
+
 }
 function find_user_token_by_selector($conn, string $selector)
 {
@@ -127,17 +130,13 @@ function check_logged_in($conn){
 
 // check the remember_me in cookie
     $token = filter_input(INPUT_COOKIE, 'remember_me', FILTER_SANITIZE_STRING);
+    $userID =token_is_valid($conn, $token);
+    if ($token && $userID) {
 
-    if ($token && token_is_valid($conn, $token)) {
-
-        $user = find_user_token_by_selector($conn, $token);
-
-        if ($user) {
-            $_SESSION["userID"] = $user["userID"];
+            $_SESSION["userID"] = $userID;
             echo json_encode(array("message" => "The user is logged in!", "code" => 200, "userID" => $_SESSION["userID"]));
             return true;
         }
-    } 
         die(json_encode(array("message" => "The user is not logged in!", "code" => 403)));
 
 }
