@@ -118,7 +118,7 @@ function remember_me($conn, int $userID, int $day = 30)
     $expiry = date('Y-m-d H:i:s', $expired_seconds);
 
     if (insert_user_token($conn, $userID, $selector, $hash_validator, $expiry)) {
-        setcookie('remember_me', $token, ['expires' =>$expired_seconds,'samesite'=>'None', 'domain'=>".coding-notes-backend.onrender.com"]);
+        setcookie('remember_me', $token, ['expires' =>$expired_seconds,'samesite'=>'None', 'domain'=>".coding-notes-backend.onrender.com", "httponly"=>1,"secure"=>1]);
     }
 }
 function signup($conn, $username, $password, $remember)
