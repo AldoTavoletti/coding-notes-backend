@@ -90,6 +90,18 @@ function token_is_valid($conn, string $token): bool
 
     return password_verify($validator, $tokens['hashed_validator']);
 }
+
+function parse_token(string $token): ?array
+{
+    $parts = explode(':', $token);
+
+    if ($parts && count($parts) === 2) {
+        return [$parts[0], $parts[1]];
+    }
+    return null;
+}
+
+
 function check_logged_in($conn){
 
     // if (isset($_SESSION["userID"])) /* if the session variable is set, it means the user is still logged in */ {

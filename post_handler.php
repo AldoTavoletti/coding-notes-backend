@@ -59,15 +59,6 @@ function generate_tokens(): array
     return [$selector, $validator, $selector . ':' . $validator];
 }
 
-function parse_token(string $token): ?array
-{
-    $parts = explode(':', $token);
-
-    if ($parts && count($parts) === 2) {
-        return [$parts[0], $parts[1]];
-    }
-    return null;
-}
 
 function insert_user_token($conn, int $userID, string $selector, string $hashedValidator, string $expiry): bool
 {
