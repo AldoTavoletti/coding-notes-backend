@@ -69,28 +69,7 @@ function insert_user_token($conn, int $userID, string $selector, string $hashedV
     return $stmt->execute();
 }
 
-function find_user_token_by_selector($conn, string $selector)
-{
 
-
-    $stmt = $conn->prepare('SELECT *
-                FROM user_tokens
-                WHERE selector = ? AND
-                    expiry >= now()
-                LIMIT 1');
-    $stmt->bind_param('s', $selector);
-
-    $stmt->execute();
-
-    return $stmt->get_result()->fetch_assoc();
-}
-function delete_user_token($conn, int $userID): bool
-{
-    $stmt = $conn->prepare('DELETE FROM user_tokens WHERE userID = ?');
-    $stmt->bind_param('i', $userID);
-
-    return $stmt->execute();
-}
 
 
 
