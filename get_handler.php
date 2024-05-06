@@ -130,7 +130,7 @@ function check_logged_in($conn){
 
     if ($token && token_is_valid($conn, $token)) {
 
-        $user = find_user_by_token($conn, $token);
+        $user = find_user_token_by_selector($conn, $token);
 
         if ($user) {
             $_SESSION["userID"] = $user["userID"];
