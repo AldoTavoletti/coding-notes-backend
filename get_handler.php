@@ -78,7 +78,7 @@ function find_user_by_token($conn, string $token)
     return $stmt->get_result()->fetch_assoc();
 }
 
-function token_is_valid($conn, string $token): bool
+function token_is_valid($conn, string $token)
 {
     // parse the token to get the selector and validator 
     [$selector, $validator] = parse_token($token);
