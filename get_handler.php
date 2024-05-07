@@ -151,7 +151,8 @@ function logout(){
 
     // remove the remember_me cookie
     if (isset($_COOKIE['remember_me'])) {
-        setcookie('remember_me', '', time()-3600,"/");
+        setcookie('remember_me', '', ['expires' => time()-3600, 'samesite' => 'None', 'domain' => ".coding-notes-backend.onrender.com", "httponly" => 1, "secure" => 1]);
+
         unset($_COOKIE['remember_me']);
     }
 
