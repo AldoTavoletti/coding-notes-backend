@@ -152,7 +152,7 @@ function logout(){
     // remove the remember_me cookie
     if (isset($_COOKIE['remember_me'])) {
         unset($_COOKIE['remember_me']);
-        setcookie('remember_me', null, -1);
+        setcookie('remember_me', '', time()-3600);
     }
 
     echo json_encode(array("message" => "The user has logged out!", "code" => 200));
