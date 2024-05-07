@@ -324,6 +324,10 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
     }
 
+    if ($arr["remember"]) {
+            remember_me($conn, $userID);
+        }
+
     // save the userID in a session variable
     $_SESSION["userID"] = $userID;
 
