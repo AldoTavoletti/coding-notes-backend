@@ -2,7 +2,7 @@
 session_start();
 
 // Allow from any origin
-    header("Access-Control-Allow-Origin: https://codingnotes-six.vercel.app, http://localhost");
+    header("Access-Control-Allow-Origin: https://codingnotes-six.vercel.app, http://localhost:3000");
     header('Access-Control-Allow-Credentials: true');
     header('Access-Control-Max-Age: 86400');    // cache for 1 day
 
