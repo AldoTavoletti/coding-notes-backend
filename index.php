@@ -1,8 +1,10 @@
 <?php
 session_start();
-
-// Allow from any origin
-    header("Access-Control-Allow-Origin: https://codingnotes-six.vercel.app, http://localhost:3000");
+    $allowed_origins = array("https://codingnotes-six.vercel.app", "http://localhost:3000");
+    
+    if (in_array($origin=$_SERVER["HTTP_ORIGIN"],$allowed_origins)) {
+        header("Access-Control-Allow-Origin: $origin");
+    }
     header('Access-Control-Allow-Credentials: true');
     header('Access-Control-Max-Age: 86400');    // cache for 1 day
 
