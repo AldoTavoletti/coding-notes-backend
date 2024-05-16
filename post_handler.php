@@ -227,7 +227,7 @@ function add_google_user($conn, $sub, $username)
 {
 
     // insert the user in the db
-    $stmt = $conn->prepare("INSERT INTO users (username, sub) VALUES (?)");
+    $stmt = $conn->prepare("INSERT INTO users (username, sub) VALUES (?,?)");
     $stmt->bind_param("ss", $username, $sub);
     $stmt->execute();
 
