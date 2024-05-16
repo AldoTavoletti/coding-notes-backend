@@ -223,12 +223,12 @@ function oauth_tokeninfo_call($id_token)
     return $response;
 }
 
-function add_google_user($conn, $sub)
+function add_google_user($conn, $sub, $username)
 {
 
     // insert the user in the db
-    $stmt = $conn->prepare("INSERT INTO users (sub) VALUES (?)");
-    $stmt->bind_param("s", $sub);
+    $stmt = $conn->prepare("INSERT INTO users (username, sub) VALUES (?)");
+    $stmt->bind_param("ss", $username, $sub);
     $stmt->execute();
 
 }
@@ -316,8 +316,9 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
     if (!$userID) /* if the user isn't already in the db */ {
 
+        $username = str_replace(" ", "_", strtolower($tokenInfoDecoded->name));
         // add the user to the db
-        add_google_user($conn, $tokenInfoDecoded->sub);
+        add_google_user($conn, $tokenInfoDecoded->sub, $username);
 
         // get its ID
         $userID = get_google_userID($conn, $tokenInfoDecoded->sub);
@@ -337,7 +338,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
     $_SESSION["username"] = $username;
 
 
-    echo json_encode(array("message" => "Access granted!", "username" => $_SESSION["username"], "code" => 200, "tokeninfo" => $tokenInfoDecoded));
+    echo json_encode(array("message" => "Access granted!", "username" => $_SESSION["username"], "code" => 200));
 
 }
 
