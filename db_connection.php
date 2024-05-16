@@ -1,8 +1,8 @@
 <?php 
 
 $servername = $_ENV["DB_HOSTNAME"]; 
-$username = $_ENV["DB_USERNAME"]; 
-$password = $_ENV["DB_PASSWORD"];
+$userdb = $_ENV["DB_USERNAME"]; 
+$passworddb = $_ENV["DB_PASSWORD"];
 $dbname = $_ENV["DB_NAME"]; 
 // $servername = "localhost";
 // $username = "root";
@@ -10,7 +10,7 @@ $dbname = $_ENV["DB_NAME"];
 // $dbname = "codingnotesdb";
 
 // Create connection 
-$conn = mysqli_connect($servername, $username, $password, $dbname); 
+$conn = mysqli_connect($servername, $userdb, $passworddb, $dbname); 
  
 // Check connection 
 if (!$conn) { 
