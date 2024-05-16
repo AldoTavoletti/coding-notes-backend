@@ -97,10 +97,10 @@ function find_user_token_by_selector($conn, string $selector)
 {
 
 
-    $stmt = $conn->prepare('SELECT *
-                FROM user_tokens
-                WHERE selector = ? AND
-                    expiry >= now()
+    $stmt = $conn->prepare('SELECT ut.userID, u.username, ut.hashed_validator
+                FROM user_tokens ut INNER JOIN users u ON u.userID=ut.userID
+                WHERE ut.selector = ? AND
+                    ut.expiry >= now()
                 LIMIT 1');
     $stmt->bind_param('s', $selector);
 
