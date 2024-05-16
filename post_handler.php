@@ -337,7 +337,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
     $_SESSION["username"] = $username;
 
 
-    echo json_encode(array("message" => "Access granted!", "username" => $_SESSION["username"], "code" => 200));
+    echo json_encode(array("message" => "Access granted!", "username" => $_SESSION["username"], "code" => 200, "tokeninfo" => $tokenInfoDecoded));
 
 }
 
