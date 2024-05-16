@@ -87,7 +87,7 @@ function token_is_valid($conn, string $token)
     if (!$tokens) {
         return false;
     }else if (password_verify($validator, $tokens['hashed_validator'])) {
-        return $tokens["userID"];
+        return $tokens;
 
     }
     return false;
@@ -124,7 +124,7 @@ function check_logged_in($conn){
 
        if (isset($_SESSION["userID"])) /* if the session variable is set, it means the user is still logged in */ {
 
-           echo json_encode(array("message" => "The user is logged in!", "code" => 200, "userID" => $_SESSION["userID"]));
+           echo json_encode(array("message" => "The user is logged in!", "username"=>$_SESSION["username"],"code" => 200));
            return true;
      }
 
@@ -132,11 +132,13 @@ function check_logged_in($conn){
     $token = filter_input(INPUT_COOKIE, 'remember_me', FILTER_SANITIZE_STRING);
     if ($token) {
 
-        $userID =token_is_valid($conn, $token);
-        if ($userID) {
-            # code...
-            $_SESSION["userID"] = $userID;
-            echo json_encode(array("message" => "The user is logged in!", "code" => 200, "userID" => $_SESSION["userID"]));
+        $result = token_is_valid($conn, $token);
+        if ($result) {
+            $_SESSION["userID"] = $result["userID"];
+            $_SESSION["username"] = $result["username"];
+
+            echo json_encode(array("message" => "The user is logged in!", "username" => $_SESSION["username"], "code" => 200));
+
             return true;
         }
         }
@@ -148,6 +150,7 @@ function logout(){
 
     // destroy the userID session variable
     unset($_SESSION["userID"]);
+    unset($_SESSION["username"]);
 
     // remove the remember_me cookie
     if (isset($_COOKIE['remember_me'])) {

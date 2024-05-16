@@ -121,20 +121,24 @@ function signup($conn, $username, $password, $remember)
 
     // save the userID in a session
     $_SESSION["userID"] = $userID;
+    $_SESSION["username"] = $username;
+
 
 }
 
-function login($conn, $userID, $password, $passwordDB, $remember)
+function login($conn, $userID, $username, $password, $passwordDB, $remember)
 {
 
     if (password_verify($password, $passwordDB)) /* if the password is correct */ {
 
         // save the userID in a session
         $_SESSION["userID"] = $userID;
+        $_SESSION["username"] = $username;
+
         if ($remember) {
             remember_me($conn, $userID);
         }
-        echo json_encode(array("message" => "Access granted!", "code" => 200));
+        echo json_encode(array("message" => "Access granted!","username" => $_SESSION["username"], "code" => 200));
 
     } else {
 
@@ -274,7 +278,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
         signup($conn, $arr["username"], $arr["password"], $arr["remember"]);
 
-        echo json_encode(array("message" => "Signed up!", 'code' => 200));
+        echo json_encode(array("message" => "Signed up!", , "username" => $_SESSION["username"], "code" => 200));
 
 
     }
@@ -284,7 +288,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
     $result = username_exists($conn, $arr["username"]);
     if (isset($result["password"], $result["userID"])) /* if a user with this username exists */ {
 
-        login($conn, $result["userID"], $arr["password"], $result["password"], $arr["remember"]);
+        login($conn, $result["userID"], $result["username"], $arr["password"], $result["password"], $arr["remember"]);
 
     } else {
 
@@ -330,8 +334,10 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
     // save the userID in a session variable
     $_SESSION["userID"] = $userID;
+    $_SESSION["username"] = $username;
 
-    echo json_encode(array("message" => "Access granted!", "code" => 200));
+
+    echo json_encode(array("message" => "Access granted!", "username" => $_SESSION["username"], "code" => 200));
 
 }
 
