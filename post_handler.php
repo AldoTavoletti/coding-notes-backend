@@ -317,6 +317,13 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
     if (!$userID) /* if the user isn't already in the db */ {
 
         $username = str_replace(" ", "_", strtolower($tokenInfoDecoded->name));
+        $i = 0;
+        while (username_exists($conn, $username)) {
+            $i++;
+            $username .= $i;
+
+        }
+
         // add the user to the db
         add_google_user($conn, $tokenInfoDecoded->sub, $username);
 
