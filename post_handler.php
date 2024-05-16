@@ -233,17 +233,17 @@ function add_google_user($conn, $sub, $username)
 
 }
 
-function get_google_userID($conn, $sub)
+function get_google_user($conn, $sub)
 {
 
     // get the userID of the current user from the db using the sub key
-    $stmt = $conn->prepare("SELECT userID FROM users WHERE sub=?");
+    $stmt = $conn->prepare("SELECT userID, username FROM users WHERE sub=?");
     $stmt->bind_param("s", $sub);
     $stmt->execute();
     $result = $stmt->get_result()->fetch_assoc();
 
 
-    return isset($result["userID"]) ? $result["userID"] : false;
+    return isset($result["userID"]) ? $result : false;
 
 }
 
@@ -312,9 +312,9 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
     $tokenInfoDecoded = json_decode($tokenInfo);
 
     // get the userID (if no user is found userID will be false, meaning the user is not in the db yet)
-    $userID = get_google_userID($conn, $tokenInfoDecoded->sub);
+    $googleUser = get_google_user($conn, $tokenInfoDecoded->sub);
 
-    if (!$userID) /* if the user isn't already in the db */ {
+    if (!$googleUser) /* if the user isn't already in the db */ {
 
         $username = str_replace(" ", "_", strtolower($tokenInfoDecoded->name));
         $i = 0;
@@ -328,21 +328,21 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
         add_google_user($conn, $tokenInfoDecoded->sub, $username);
 
         // get its ID
-        $userID = get_google_userID($conn, $tokenInfoDecoded->sub);
+        $googleUser = get_google_user($conn, $tokenInfoDecoded->sub);
 
 
         // create a default "General" folder
-        add_folder($conn, "General", "black", $userID);
+        add_folder($conn, "General", "black", $googleUser["userID"]);
 
     }
 
     if ($arr["remember"]) {
-            remember_me($conn, $userID);
+            remember_me($conn, $googleUser["userID"]);
         }
 
     // save the userID in a session variable
-    $_SESSION["userID"] = $userID;
-    $_SESSION["username"] = $username;
+    $_SESSION["userID"] = $googleUser["userID"];
+    $_SESSION["username"] = $googleUser["username"];
 
 
     echo json_encode(array("message" => "Access granted!", "username" => $_SESSION["username"], "code" => 200));
