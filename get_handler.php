@@ -164,6 +164,9 @@ function logout(){
 }
 
 
+
+
+
 if (isset($_GET["retrieve"]) && $_GET["retrieve"] === "all") {
 
     $folders_and_notes = get_all_folders_and_notes($conn);
