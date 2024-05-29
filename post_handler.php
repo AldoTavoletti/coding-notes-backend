@@ -13,6 +13,8 @@ function add_folder($conn, $name, $color, $userID)
     // execute the query
     $stmt->execute();
 
+    return $conn->insert_id();
+
 }
 
 function add_note($conn, $title, $folderID)
@@ -27,6 +29,7 @@ function add_note($conn, $title, $folderID)
     // execute the query
     $stmt->execute();
 
+    return $conn->insert_id();
 }
 
 function username_exists($conn, $username)
@@ -110,11 +113,8 @@ function signup($conn, $username, $password, $remember)
     $stmt->bind_param("ss", $username, $passwordHash);
     $stmt->execute();
 
-    // get its userID
-    $stmt = $conn->prepare("SELECT userID FROM users WHERE username=?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $userID = $stmt->get_result()->fetch_assoc()["userID"];
+    
+    $userID = $conn->insert_id();
 
     // create a default "General" folder
     add_folder($conn, "General", "black", $userID);
@@ -231,6 +231,8 @@ function add_google_user($conn, $sub, $username)
     $stmt->bind_param("ss", $username, $sub);
     $stmt->execute();
 
+    return $conn->insert_id();
+
 }
 
 function get_google_user($conn, $sub)
@@ -263,9 +265,9 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
 } else if (isset($arr["title"], $arr["folderID"])) /* if a note is being added */ {
 
-    add_note($conn, $arr["title"], $arr["folderID"]);
+    $note_id = add_note($conn, $arr["title"], $arr["folderID"]);
 
-    echo json_encode(array("message" => "Note created!", "code" => 200));
+    echo json_encode(array("message" => "Note created!", "noteID"=>$note_id, "code" => 200));
 
 
 } else if (isset($arr["action"]) && $arr["action"] === "signup") {
@@ -325,14 +327,10 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
         }
 
         // add the user to the db
-        add_google_user($conn, $tokenInfoDecoded->sub, $username);
-
-        // get its ID
-        $googleUser = get_google_user($conn, $tokenInfoDecoded->sub);
-
+        $googleUser = add_google_user($conn, $tokenInfoDecoded->sub, $username);
 
         // create a default "General" folder
-        add_folder($conn, "General", "black", $googleUser["userID"]);
+        add_folder($conn, "General", "black", $googleUser);
 
     }
 
