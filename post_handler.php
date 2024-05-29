@@ -13,7 +13,7 @@ function add_folder($conn, $name, $color, $userID)
     // execute the query
     $stmt->execute();
 
-    return $conn->insert_id();
+    return $conn->insert_id;
 
 }
 
@@ -29,7 +29,7 @@ function add_note($conn, $title, $folderID)
     // execute the query
     $stmt->execute();
 
-    return $conn->insert_id();
+    return $conn->insert_id;
 }
 
 function username_exists($conn, $username)
@@ -114,7 +114,7 @@ function signup($conn, $username, $password, $remember)
     $stmt->execute();
 
     
-    $userID = $conn->insert_id();
+    $userID = $conn->insert_id;
 
     // create a default "General" folder
     add_folder($conn, "General", "black", $userID);
@@ -231,7 +231,7 @@ function add_google_user($conn, $sub, $username)
     $stmt->bind_param("ss", $username, $sub);
     $stmt->execute();
 
-    return $conn->insert_id();
+    return $conn->insert_id;
 
 }
 
