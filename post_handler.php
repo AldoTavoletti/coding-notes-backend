@@ -231,7 +231,7 @@ function add_google_user($conn, $sub, $username)
     $stmt->bind_param("ss", $username, $sub);
     $stmt->execute();
 
-    return $conn->insert_id;
+    return array("userID"=>$conn->insert_id,"username"=>$username);
 
 }
 
