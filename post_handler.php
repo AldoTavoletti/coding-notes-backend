@@ -330,7 +330,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
         $googleUser = add_google_user($conn, $tokenInfoDecoded->sub, $username);
 
         // create a default "General" folder
-        add_folder($conn, "General", "black", $googleUser);
+        add_folder($conn, "General", "black", $googleUser["userID"]);
 
     }
 
