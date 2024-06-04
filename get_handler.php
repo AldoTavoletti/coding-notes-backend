@@ -127,7 +127,6 @@ function check_logged_in(mysqli $conn): bool
 
     if (isset($_SESSION["userID"])) /* if the session variable is set, it means the user is still logged in */ {
 
-        echo json_encode(array("message" => "The user is logged in!", "username" => $_SESSION["username"], "code" => 200));
         return true;
     }
 
