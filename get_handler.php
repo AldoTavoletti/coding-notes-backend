@@ -1,6 +1,7 @@
 <?php
 
-function get_all_folders_and_notes($conn){
+function get_all_folders_and_notes(mysqli $conn): ?array
+{
 
     $folderID = null;
 
@@ -41,7 +42,8 @@ function get_all_folders_and_notes($conn){
 
 }
 
-function get_single_note($conn){
+function get_single_note(mysqli $conn): ?array
+{
 
     // get the requested note
     $stmt = $conn->prepare("SELECT * FROM notes WHERE noteID =?");
@@ -57,7 +59,7 @@ function get_single_note($conn){
     return $note;
 
 }
-function find_user_by_token($conn, string $token)
+function find_user_by_token(mysqli $conn, string $token) : ?array
 {
     $tokens = parse_token($token);
 
@@ -78,7 +80,7 @@ function find_user_by_token($conn, string $token)
     return $stmt->get_result()->fetch_assoc();
 }
 
-function token_is_valid($conn, string $token)
+function token_is_valid(mysqli $conn, string $token) : array | bool
 {
     // parse the token to get the selector and validator 
     [$selector, $validator] = parse_token($token);
@@ -86,14 +88,14 @@ function token_is_valid($conn, string $token)
     $tokens = find_user_token_by_selector($conn, $selector);
     if (!$tokens) {
         return false;
-    }else if (password_verify($validator, $tokens['hashed_validator'])) {
+    } else if (password_verify($validator, $tokens['hashed_validator'])) {
         return $tokens;
 
     }
     return false;
 
 }
-function find_user_token_by_selector($conn, string $selector)
+function find_user_token_by_selector(mysqli $conn, string $selector) : ?array
 {
 
 
@@ -120,15 +122,16 @@ function parse_token(string $token): ?array
 }
 
 
-function check_logged_in($conn){
+function check_logged_in(mysqli $conn) : bool
+{
 
-       if (isset($_SESSION["userID"])) /* if the session variable is set, it means the user is still logged in */ {
+    if (isset($_SESSION["userID"])) /* if the session variable is set, it means the user is still logged in */ {
 
-           echo json_encode(array("message" => "The user is logged in!", "username"=>$_SESSION["username"],"code" => 200));
-           return true;
-     }
+        echo json_encode(array("message" => "The user is logged in!", "username" => $_SESSION["username"], "code" => 200));
+        return true;
+    }
 
-// check the remember_me in cookie
+    // check the remember_me in cookie
     $token = filter_input(INPUT_COOKIE, 'remember_me', FILTER_SANITIZE_STRING);
     if ($token) {
 
@@ -137,16 +140,16 @@ function check_logged_in($conn){
             $_SESSION["userID"] = $result["userID"];
             $_SESSION["username"] = $result["username"];
 
-            echo json_encode(array("message" => "The user is logged in!", "username" => $_SESSION["username"], "code" => 200));
 
             return true;
         }
-        }
-        die(json_encode(array("message" => "The user is not logged in!", "code" => 403)));
+    }
+    return false;
 
 }
 
-function logout(){
+function logout() : void
+{
 
     // destroy the userID session variable
     unset($_SESSION["userID"]);
@@ -154,7 +157,7 @@ function logout(){
 
     // remove the remember_me cookie
     if (isset($_COOKIE['remember_me'])) {
-        setcookie('remember_me', '', ['expires' => time()-3600, 'samesite' => 'None', 'domain' => ".coding-notes-backend.onrender.com", "httponly" => 1, "secure" => 1]);
+        setcookie('remember_me', '', ['expires' => time() - 3600, 'samesite' => 'None', 'domain' => ".coding-notes-backend.onrender.com", "httponly" => 1, "secure" => 1]);
 
         unset($_COOKIE['remember_me']);
     }
@@ -183,7 +186,11 @@ if (isset($_GET["retrieve"]) && $_GET["retrieve"] === "all") {
 
 } else if (isset($_GET["check"]) && $_GET["check"] === "login") {
 
-    check_logged_in($conn);
+    echo check_logged_in($conn) ? 
+    json_encode(array("message" => "The user is logged in!", "username" => $_SESSION["username"], "code" => 200)):
+    json_encode(array("message" => "The user is not logged in!", "code" => 403));
+    
+    ;
 
 } else if (isset($_GET["logout"]) && $_GET["logout"] === "true") {
 

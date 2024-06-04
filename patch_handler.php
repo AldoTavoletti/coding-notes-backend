@@ -1,49 +1,40 @@
 <?php
 
-function patch_note_content($conn, $content, $noteID){
+function patch_note_content(mysqli $conn, string $content, int $noteID): void
+{
 
-    //prepare the statement
     $stmt = $conn->prepare("UPDATE notes SET content=? WHERE noteID=?");
 
-    // bind the parameters
     $stmt->bind_param("si", $content, $noteID);
 
-    // execute the query
     $stmt->execute();
 
 }
 
-function patch_note_title($conn, $title, $noteID){
+function patch_note_title(mysqli $conn, string $title, int $noteID): void
+{
 
-    //prepare the statement
     $stmt = $conn->prepare("UPDATE notes SET title=? WHERE noteID=?");
 
-    // bind the parameters
     $stmt->bind_param("si", $title, $noteID);
 
-    // execute the query
     $stmt->execute();
 
 }
 
-function patch_folder($conn, $name, $color, $folderID){
+function patch_folder(mysqli $conn, string $name, string $color, int $folderID): void
+{
 
-    //prepare the statement
     $stmt = $conn->prepare("UPDATE folders SET folderName=?, color=? WHERE folderID=?");
 
-    // bind the parameters
     $stmt->bind_param("ssi", $name, $color, $folderID);
 
-    // execute the query
     $stmt->execute();
 
 }
 
 
-//get the json data sent (we have to retrieve it this way since it's sent with ajax and not with a regular form)
 $json_data = file_get_contents("php://input");
-
-// decode the json data into an associative array
 $arr = json_decode($json_data, true);
 
 if (isset($arr["content"])) /* if the content of the note has to be patched */ {
