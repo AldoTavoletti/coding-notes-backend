@@ -125,10 +125,10 @@ function parse_token(string $token): ?array
 function check_logged_in(mysqli $conn): bool
 {
 
-    // if (isset($_SESSION["userID"])) /* if the session variable is set, it means the user is still logged in */ {
+    if (isset($_SESSION["userID"])) /* if the session variable is set, it means the user is still logged in */ {
 
-    //     return true;
-    // }
+        return true;
+    }
 
     // check the remember_me in cookie
     $token = filter_input(INPUT_COOKIE, 'remember_me', FILTER_SANITIZE_STRING);
