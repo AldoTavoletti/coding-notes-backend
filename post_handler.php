@@ -287,6 +287,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 } else if (isset($arr["action"]) && $arr["action"] === "login") {
 
     $result = username_exists($conn, $arr["username"]);
+    
     if (isset($result["password"], $result["userID"])) /* if a user with this username exists */ {
 
         login($conn, $result["userID"], $arr["username"], $arr["password"], $result["password"], $arr["remember"]);
