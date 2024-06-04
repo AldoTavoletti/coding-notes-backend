@@ -59,7 +59,7 @@ function get_single_note(mysqli $conn): ?array
     return $note;
 
 }
-function find_user_by_token(mysqli $conn, string $token) : ?array
+function find_user_by_token(mysqli $conn, string $token): ?array
 {
     $tokens = parse_token($token);
 
@@ -80,7 +80,7 @@ function find_user_by_token(mysqli $conn, string $token) : ?array
     return $stmt->get_result()->fetch_assoc();
 }
 
-function token_is_valid(mysqli $conn, string $token) : array|bool
+function token_is_valid(mysqli $conn, string $token): array|bool
 {
     // parse the token to get the selector and validator 
     [$selector, $validator] = parse_token($token);
@@ -95,7 +95,7 @@ function token_is_valid(mysqli $conn, string $token) : array|bool
     return false;
 
 }
-function find_user_token_by_selector(mysqli $conn, string $selector) : ?array
+function find_user_token_by_selector(mysqli $conn, string $selector): ?array
 {
 
 
@@ -122,7 +122,7 @@ function parse_token(string $token): ?array
 }
 
 
-function check_logged_in(mysqli $conn) : bool
+function check_logged_in(mysqli $conn): bool
 {
 
     if (isset($_SESSION["userID"])) /* if the session variable is set, it means the user is still logged in */ {
@@ -148,7 +148,7 @@ function check_logged_in(mysqli $conn) : bool
 
 }
 
-function logout() : void
+function logout(): void
 {
 
     // destroy the userID session variable
@@ -186,10 +186,10 @@ if (isset($_GET["retrieve"]) && $_GET["retrieve"] === "all") {
 
 } else if (isset($_GET["check"]) && $_GET["check"] === "login") {
 
-    echo check_logged_in($conn) ? 
-    json_encode(array("message" => "The user is logged in!", "username" => $_SESSION["username"], "code" => 200)):
-    json_encode(array("message" => "The user is not logged in!", "code" => 403));
-    
+    echo check_logged_in($conn) ?
+        json_encode(array("message" => "The user is logged in!", "username" => $_SESSION["username"], "code" => 200)) :
+        json_encode(array("message" => "The user is not logged in!", "code" => 403));
+
     ;
 
 } else if (isset($_GET["logout"]) && $_GET["logout"] === "true") {
