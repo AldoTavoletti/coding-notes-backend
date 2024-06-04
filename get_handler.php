@@ -80,7 +80,7 @@ function find_user_by_token(mysqli $conn, string $token): ?array
     return $stmt->get_result()->fetch_assoc();
 }
 
-function token_is_valid(mysqli $conn, string $token): bool|array
+function token_is_valid(mysqli $conn, string $token): mixed
 {
     // parse the token to get the selector and validator 
     [$selector, $validator] = parse_token($token);
