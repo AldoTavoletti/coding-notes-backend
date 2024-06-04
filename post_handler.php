@@ -1,44 +1,39 @@
 <?php
 
 
-function add_folder($conn, $name, $color, $userID)
+function add_folder(mysqli $conn, string $name, string $color, int $userID): int
 {
 
-    //prepare the stmt
     $stmt = $conn->prepare("INSERT INTO folders (folderName, color, userID) VALUES (?,?,?)");
 
-    // bind the parameters
     $stmt->bind_param("ssi", $name, $color, $userID);
 
-    // execute the query
     $stmt->execute();
 
     return $conn->insert_id;
 
 }
 
-function add_note($conn, $title, $folderID)
+function add_note(mysqli $conn, string $title, int $folderID): int
 {
 
-    //prepare the stmt
     $stmt = $conn->prepare("INSERT INTO notes (title, folderID) VALUES (?,?)");
 
-    // bind the parameters
     $stmt->bind_param("si", $title, $folderID);
 
-    // execute the query
     $stmt->execute();
 
     return $conn->insert_id;
 }
 
-function username_exists($conn, $username)
+function username_exists(mysqli $conn, string $username): ?array
 {
 
     // look for a record with the same username as the one inserted from the user
     $stmt = $conn->prepare("SELECT userID, password FROM users WHERE username=?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
+
     $result = $stmt->get_result()->fetch_assoc();
 
 
@@ -48,7 +43,7 @@ function username_exists($conn, $username)
 
     } else /* if there is no user with this username*/ {
 
-        return false;
+        return null;
 
     }
 
@@ -63,7 +58,7 @@ function generate_tokens(): array
 }
 
 
-function insert_user_token($conn, int $userID, string $selector, string $hashedValidator, string $expiry): bool
+function insert_user_token(mysqli $conn, int $userID, string $selector, string $hashedValidator, string $expiry): bool
 {
 
     $stmt = $conn->prepare('INSERT INTO user_tokens(userID, selector, hashed_validator, expiry) VALUES(?, ?, ?, ?)');
@@ -76,12 +71,12 @@ function insert_user_token($conn, int $userID, string $selector, string $hashedV
 
 
 
-function remember_me($conn, int $userID, int $day = 30)
+function remember_me(mysqli $conn, int $userID, int $day = 30): void
 {
     [$selector, $validator, $token] = generate_tokens();
 
     // remove all existing token associated with the user id
-    delete_user_token($conn,$userID);
+    delete_user_token($conn, $userID);
 
     // set expiration date
     $expired_seconds = time() + 60 * 60 * 24 * $day;
@@ -91,18 +86,18 @@ function remember_me($conn, int $userID, int $day = 30)
     $expiry = date('Y-m-d H:i:s', $expired_seconds);
 
     if (insert_user_token($conn, $userID, $selector, $hash_validator, $expiry)) {
-        setcookie('remember_me', $token, ['expires' =>$expired_seconds,'samesite'=>'None', 'domain'=>".coding-notes-backend.onrender.com", "httponly"=>1,"secure"=>1]);
+        setcookie('remember_me', $token, ['expires' => $expired_seconds, 'samesite' => 'None', 'domain' => ".coding-notes-backend.onrender.com", "httponly" => 1, "secure" => 1]);
     }
 }
 
-function delete_user_token($conn, int $userID): bool
+function delete_user_token(mysqli $conn, int $userID): bool
 {
     $stmt = $conn->prepare('DELETE FROM user_tokens WHERE userID = ?');
     $stmt->bind_param('i', $userID);
 
     return $stmt->execute();
 }
-function signup($conn, $username, $password, $remember)
+function signup(mysqli $conn, string $username, string $password, bool $remember): void
 {
 
     // hash the passowrd
@@ -113,11 +108,15 @@ function signup($conn, $username, $password, $remember)
     $stmt->bind_param("ss", $username, $passwordHash);
     $stmt->execute();
 
-    
+
     $userID = $conn->insert_id;
 
     // create a default "General" folder
     add_folder($conn, "General", "black", $userID);
+
+    if ($remember) {
+        remember_me($conn, $userID);
+    }
 
     // save the userID in a session
     $_SESSION["userID"] = $userID;
@@ -126,7 +125,7 @@ function signup($conn, $username, $password, $remember)
 
 }
 
-function login($conn, $userID, $username, $password, $passwordDB, $remember)
+function login(mysqli $conn, int $userID, string $username, string $password, string $passwordDB, bool $remember): void
 {
 
     if (password_verify($password, $passwordDB)) /* if the password is correct */ {
@@ -138,7 +137,7 @@ function login($conn, $userID, $username, $password, $passwordDB, $remember)
         if ($remember) {
             remember_me($conn, $userID);
         }
-        echo json_encode(array("message" => "Access granted!","username" => $_SESSION["username"], "code" => 200));
+        echo json_encode(array("message" => "Access granted!", "username" => $_SESSION["username"], "code" => 200));
 
     } else {
 
@@ -149,7 +148,7 @@ function login($conn, $userID, $username, $password, $passwordDB, $remember)
 
 }
 
-function get_google_tokens($code)
+function get_google_tokens(string $code): string
 {
 
     // set all the necessary data
@@ -211,7 +210,7 @@ function get_google_tokens($code)
 
 }
 
-function oauth_tokeninfo_call($id_token)
+function oauth_tokeninfo_call(int $id_token): string
 {
 
     // Google OAuth 2.0 tokeninfo endpoint URL
@@ -223,7 +222,7 @@ function oauth_tokeninfo_call($id_token)
     return $response;
 }
 
-function add_google_user($conn, $sub, $username)
+function add_google_user(mysqli $conn, string $sub, string $username): array
 {
 
     // insert the user in the db
@@ -231,11 +230,11 @@ function add_google_user($conn, $sub, $username)
     $stmt->bind_param("ss", $username, $sub);
     $stmt->execute();
 
-    return array("userID"=>$conn->insert_id,"username"=>$username);
+    return array("userID" => $conn->insert_id, "username" => $username);
 
 }
 
-function get_google_user($conn, $sub)
+function get_google_user(mysqli $conn, string $sub): ?array
 {
 
     // get the userID of the current user from the db using the sub key
@@ -245,7 +244,7 @@ function get_google_user($conn, $sub)
     $result = $stmt->get_result()->fetch_assoc();
 
 
-    return isset($result["userID"]) ? $result : false;
+    return isset($result["userID"]) ? $result : null;
 
 }
 
@@ -267,7 +266,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
     $note_id = add_note($conn, $arr["title"], $arr["folderID"]);
 
-    echo json_encode(array("message" => "Note created!", "noteID"=>$note_id, "code" => 200));
+    echo json_encode(array("message" => "Note created!", "noteID" => $note_id, "code" => 200));
 
 
 } else if (isset($arr["action"]) && $arr["action"] === "signup") {
@@ -320,6 +319,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
         $username = str_replace(" ", "_", strtolower($tokenInfoDecoded->name));
         $i = 0;
+
         while (username_exists($conn, $username)) {
             $i++;
             $username .= $i;
@@ -335,8 +335,8 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
     }
 
     if ($arr["remember"]) {
-            remember_me($conn, $googleUser["userID"]);
-        }
+        remember_me($conn, $googleUser["userID"]);
+    }
 
     // save the userID in a session variable
     $_SESSION["userID"] = $googleUser["userID"];
