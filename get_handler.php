@@ -193,7 +193,7 @@ if (isset($_GET["retrieve"]) && $_GET["retrieve"] === "all") {
 
     }
 
-    ;
+    
 
 } else if (isset($_GET["logout"]) && $_GET["logout"] === "true") {
 
