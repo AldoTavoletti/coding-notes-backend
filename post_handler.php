@@ -210,7 +210,7 @@ function get_google_tokens(string $code): string
 
 }
 
-function oauth_tokeninfo_call(int $id_token): string
+function oauth_tokeninfo_call(string $id_token): string
 {
 
     // Google OAuth 2.0 tokeninfo endpoint URL
