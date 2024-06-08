@@ -188,7 +188,7 @@ if (isset($_GET["retrieve"]) && $_GET["retrieve"] === "all") {
     if (check_logged_in($conn)) {
         echo json_encode(array("message" => "The user is logged in!", "username" => $_SESSION["username"], "code" => 200));
     }else{
-        echo json_encode(array("message" => "The user is not logged in!", "code" => 403));
+        echo json_encode(array("message" => "The user is not logged in!", "code" => 401));
 
     }
 
