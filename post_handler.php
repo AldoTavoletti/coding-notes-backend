@@ -71,10 +71,22 @@ function insert_user_token(mysqli $conn, int $userID, string $selector, string $
 
 
 
-function remember_me(mysqli $conn, int $userID, int $day = 30): void
+function remember_me(mysqli $conn, int $userID, ?int $previous_userID,int $day = 30): void
 {
     [$selector, $validator, $token] = generate_tokens();
 
+    if ($previous_userID) {
+        // remove all existing token associated with the previous userID
+        delete_user_token($conn, $previous_userID);
+
+        // remove the remember_me cookie
+        if (isset($_COOKIE['remember_me'])) {
+            setcookie('remember_me', '', ['expires' => time() - 3600, 'samesite' => 'None', 'domain' => ".coding-notes-backend.onrender.com", "httponly" => 1, "secure" => 1]);
+
+            unset($_COOKIE['remember_me']);
+        }
+
+    }
     // remove all existing token associated with the user id
     delete_user_token($conn, $userID);
 
@@ -115,7 +127,8 @@ function signup(mysqli $conn, string $username, string $password, bool $remember
     add_folder($conn, "General", "black", $userID);
 
     if ($remember) {
-        remember_me($conn, $userID);
+        
+        remember_me($conn, $userID, $_SESSION["userID"]);
     }
 
     // save the userID in a session
@@ -130,13 +143,12 @@ function login(mysqli $conn, int $userID, string $username, string $password, st
 
     if (password_verify($password, $passwordDB)) /* if the password is correct */ {
 
+        if ($remember) {
+            remember_me($conn, $userID, $_SESSION["userID"]);
+        }
         // save the userID in a session
         $_SESSION["userID"] = $userID;
         $_SESSION["username"] = $username;
-
-        if ($remember) {
-            remember_me($conn, $userID);
-        }
         echo json_encode(array("message" => "Access granted!", "username" => $_SESSION["username"], "code" => 200));
 
     } else {
@@ -287,7 +299,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 } else if (isset($arr["action"]) && $arr["action"] === "login") {
 
     $result = username_exists($conn, $arr["username"]);
-    
+
     if (isset($result["password"], $result["userID"])) /* if a user with this username exists */ {
 
         login($conn, $result["userID"], $arr["username"], $arr["password"], $result["password"], $arr["remember"]);
@@ -336,7 +348,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
     }
 
     if ($arr["remember"]) {
-        remember_me($conn, $googleUser["userID"]);
+        remember_me($conn, $googleUser["userID"], $_SESSION["userID"]);
     }
 
     // save the userID in a session variable
