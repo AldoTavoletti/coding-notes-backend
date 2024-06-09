@@ -71,22 +71,11 @@ function insert_user_token(mysqli $conn, int $userID, string $selector, string $
 
 
 
-function remember_me(mysqli $conn, int $userID, ?int $previous_userID,int $day = 30): void
+function remember_me(mysqli $conn, int $userID, int $day = 30): void
 {
     [$selector, $validator, $token] = generate_tokens();
 
-    if ($previous_userID) {
-        // remove all existing token associated with the previous userID
-        delete_user_token($conn, $previous_userID);
 
-        // remove the remember_me cookie
-        if (isset($_COOKIE['remember_me'])) {
-            setcookie('remember_me', '', ['expires' => time() - 3600, 'samesite' => 'None', 'domain' => ".coding-notes-backend.onrender.com", "httponly" => 1, "secure" => 1]);
-
-            unset($_COOKIE['remember_me']);
-        }
-
-    }
     // remove all existing token associated with the user id
     delete_user_token($conn, $userID);
 
@@ -126,9 +115,25 @@ function signup(mysqli $conn, string $username, string $password, bool $remember
     // create a default "General" folder
     add_folder($conn, "General", "black", $userID);
 
+
+    if (isset($_COOKIE['remember_me'])) {
+
+        if (isset($_SESSION["userID"])) {
+            // remove all existing token associated with the previous userID
+            delete_user_token($conn, $_SESSION["userID"]);
+        }
+
+        // remove the remember_me cookie
+        setcookie('remember_me', '', ['expires' => time() - 3600, 'samesite' => 'None', 'domain' => ".coding-notes-backend.onrender.com", "httponly" => 1, "secure" => 1]);
+
+        unset($_COOKIE['remember_me']);
+
+    }
+
     if ($remember) {
-        
-        remember_me($conn, $userID, $_SESSION["userID"]);
+
+        remember_me($conn, $userID);
+
     }
 
     // save the userID in a session
@@ -143,8 +148,22 @@ function login(mysqli $conn, int $userID, string $username, string $password, st
 
     if (password_verify($password, $passwordDB)) /* if the password is correct */ {
 
+        if (isset($_COOKIE['remember_me'])) {
+
+            if (isset($_SESSION["userID"])) {
+                // remove all existing token associated with the previous userID
+                delete_user_token($conn, $_SESSION["userID"]);
+            }
+
+            // remove the remember_me cookie
+            setcookie('remember_me', '', ['expires' => time() - 3600, 'samesite' => 'None', 'domain' => ".coding-notes-backend.onrender.com", "httponly" => 1, "secure" => 1]);
+
+            unset($_COOKIE['remember_me']);
+
+        }
+
         if ($remember) {
-            remember_me($conn, $userID, $_SESSION["userID"]);
+            remember_me($conn, $userID);
         }
         // save the userID in a session
         $_SESSION["userID"] = $userID;
@@ -347,8 +366,22 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
     }
 
+    if (isset($_COOKIE['remember_me'])) {
+
+        if (isset($_SESSION["userID"])) {
+            // remove all existing token associated with the previous userID
+            delete_user_token($conn, $_SESSION["userID"]);
+        }
+
+        // remove the remember_me cookie
+        setcookie('remember_me', '', ['expires' => time() - 3600, 'samesite' => 'None', 'domain' => ".coding-notes-backend.onrender.com", "httponly" => 1, "secure" => 1]);
+
+        unset($_COOKIE['remember_me']);
+
+    }
+
     if ($arr["remember"]) {
-        remember_me($conn, $googleUser["userID"], $_SESSION["userID"]);
+        remember_me($conn, $googleUser["userID"]);
     }
 
     // save the userID in a session variable
