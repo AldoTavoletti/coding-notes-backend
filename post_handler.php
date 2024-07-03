@@ -103,45 +103,43 @@ function signup(mysqli $conn, string $username, string $password, bool $remember
 
     // hash the passowrd
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-    
+
     // insert the user in the db
     $stmt = $conn->prepare("INSERT INTO users(username,password) VALUES(?,?)");
     $stmt->bind_param("ss", $username, $passwordHash);
     $stmt->execute();
-    
-    $userID = $conn->insert_id;
-    echo json_encode(array("userID"=>$userID,"result"=>$conn->error, "message" => "Signed up!", "code" => 200));
 
-    
+    $userID = $conn->insert_id;
+
     // create a default "General" folder
     add_folder($conn, "General", "black", $userID);
-    
-    
+
+
     if (isset($_COOKIE['remember_me'])) {
-        
+
         if (isset($_SESSION["userID"])) {
             // remove all existing token associated with the previous userID
             delete_user_token($conn, $_SESSION["userID"]);
         }
-        
+
         // remove the remember_me cookie
         setcookie('remember_me', '', ['expires' => time() - 3600, 'samesite' => 'None', 'domain' => ".coding-notes-backend.onrender.com", "httponly" => 1, "secure" => 1]);
 
         unset($_COOKIE['remember_me']);
 
     }
-    
+
     if ($remember) {
 
         remember_me($conn, $userID);
-        
+
     }
-    
+
     // save the userID in a session
     $_SESSION["userID"] = $userID;
     $_SESSION["username"] = $username;
-    
-    
+
+
 }
 
 function login(mysqli $conn, int $userID, string $username, string $password, string $passwordDB, bool $remember): void
@@ -311,7 +309,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
         signup($conn, $arr["username"], $arr["password"], $arr["remember"]);
 
-        // echo json_encode(array("message" => "Signed up!", "username" => $_SESSION["username"], "code" => 200));
+        echo json_encode(array("message" => "Signed up!", "username" => $_SESSION["username"], "code" => 200));
 
 
     }
