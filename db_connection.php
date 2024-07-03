@@ -19,7 +19,7 @@ mysqli_ssl_set(
     $conn,
     NULL,
     NULL,
-    "/ca.pem", // path to your ca.pem file
+    __DIR__ . "/ca.pem", // path to your ca.pem file
     NULL,
     NULL
 );
