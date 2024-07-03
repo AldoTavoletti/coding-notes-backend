@@ -107,10 +107,12 @@ function signup(mysqli $conn, string $username, string $password, bool $remember
     // insert the user in the db
     $stmt = $conn->prepare("INSERT INTO users(username,password) VALUES(?,?)");
     $stmt->bind_param("ss", $username, $passwordHash);
-    $stmt->execute();
+    echo $stmt->execute();
 
 
     $userID = $conn->insert_id;
+
+    echo $userID;
 
     // create a default "General" folder
     add_folder($conn, "General", "black", $userID);
