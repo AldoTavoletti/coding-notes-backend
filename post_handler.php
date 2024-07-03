@@ -311,7 +311,7 @@ if (isset($arr["color"], $arr["name"])) /* if a folder is being added */ {
 
         signup($conn, $arr["username"], $arr["password"], $arr["remember"]);
 
-        echo json_encode(array("message" => "Signed up!", "username" => $_SESSION["username"], "code" => 200));
+        // echo json_encode(array("message" => "Signed up!", "username" => $_SESSION["username"], "code" => 200));
 
 
     }
