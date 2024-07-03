@@ -111,37 +111,37 @@ function signup(mysqli $conn, string $username, string $password, bool $remember
 
     $userID = $conn->insert_id;
 
-    echo json_encode(array("userID"=>$userID,"result"=>$stmt->execute()));
-
+    
     // create a default "General" folder
     add_folder($conn, "General", "black", $userID);
-
-
+    
+    
     if (isset($_COOKIE['remember_me'])) {
-
+        
         if (isset($_SESSION["userID"])) {
             // remove all existing token associated with the previous userID
             delete_user_token($conn, $_SESSION["userID"]);
         }
-
+        
         // remove the remember_me cookie
         setcookie('remember_me', '', ['expires' => time() - 3600, 'samesite' => 'None', 'domain' => ".coding-notes-backend.onrender.com", "httponly" => 1, "secure" => 1]);
 
         unset($_COOKIE['remember_me']);
 
     }
-
+    
     if ($remember) {
 
         remember_me($conn, $userID);
-
+        
     }
-
+    
     // save the userID in a session
     $_SESSION["userID"] = $userID;
     $_SESSION["username"] = $username;
-
-
+    
+    
+    echo json_encode(array("userID"=>$userID,"result"=>$stmt->execute()));
 }
 
 function login(mysqli $conn, int $userID, string $username, string $password, string $passwordDB, bool $remember): void
