@@ -110,7 +110,7 @@ function signup(mysqli $conn, string $username, string $password, bool $remember
     
     
     $userID = $conn->insert_id;
-    echo json_encode(array("userID"=>$userID,"result"=>$stmt->execute(), "message" => "Signed up!", "code" => 200));
+    echo json_encode(array("userID"=>$userID,"result"=>$conn->error, "message" => "Signed up!", "code" => 200));
 
     
     // create a default "General" folder
