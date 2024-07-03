@@ -103,13 +103,14 @@ function signup(mysqli $conn, string $username, string $password, bool $remember
 
     // hash the passowrd
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
+    
     // insert the user in the db
     $stmt = $conn->prepare("INSERT INTO users(username,password) VALUES(?,?)");
     $stmt->bind_param("ss", $username, $passwordHash);
-
-
+    
+    
     $userID = $conn->insert_id;
+    echo json_encode(array("userID"=>$userID,"result"=>$stmt->execute(), "message" => "Signed up!", "code" => 200));
 
     
     // create a default "General" folder
@@ -141,7 +142,6 @@ function signup(mysqli $conn, string $username, string $password, bool $remember
     $_SESSION["username"] = $username;
     
     
-    echo json_encode(array("userID"=>$userID,"result"=>$stmt->execute(), "message" => "Signed up!", "username" => $_SESSION["username"], "code" => 200));
 }
 
 function login(mysqli $conn, int $userID, string $username, string $password, string $passwordDB, bool $remember): void
