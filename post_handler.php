@@ -141,7 +141,7 @@ function signup(mysqli $conn, string $username, string $password, bool $remember
     $_SESSION["username"] = $username;
     
     
-    echo json_encode(array("userID"=>$userID,"result"=>$stmt->execute()));
+    echo json_encode(array("userID"=>$userID,"result"=>$stmt->execute(), "message" => "Signed up!", "username" => $_SESSION["username"], "code" => 200));
 }
 
 function login(mysqli $conn, int $userID, string $username, string $password, string $passwordDB, bool $remember): void
