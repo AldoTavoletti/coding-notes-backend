@@ -4,9 +4,11 @@
 function add_folder(mysqli $conn, string $name, string $color, int $userID): int
 {
 
-    $stmt = $conn->prepare("INSERT INTO folders (folderName, color, userID) VALUES (?,?,?)");
+    $folderIndex = (int) $conn->query("SELECT MAX(folderIndex) AS folderIndex FROM folders WHERE userID = $userID")->fetch_assoc()["folderIndex"];
 
-    $stmt->bind_param("ssi", $name, $color, $userID);
+    $stmt = $conn->prepare("INSERT INTO folders (folderName, color, userID, folderIndex) VALUES (?,?,?,?)");
+
+    $stmt->bind_param("ssi", $name, $color, $userID, $folderIndex);
 
     $stmt->execute();
 

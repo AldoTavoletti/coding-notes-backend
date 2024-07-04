@@ -33,6 +33,22 @@ function patch_folder(mysqli $conn, string $name, string $color, int $folderID):
 
 }
 
+function reorder_folders(mysqli $conn, int $oldIndex, int $newIndex, int $folderID): void
+{
+    if ($oldIndex < $newIndex) {
+       
+        $conn->query("UPDATE folders SET folderIndex = folderIndex-1 WHERE folderIndex BETWEEN $oldIndex+1 AND $newIndex");
+
+    } else {
+
+        $conn->query("UPDATE folders SET folderIndex = folderIndex+1 WHERE folderIndex BETWEEN $newIndex AND $oldIndex-1");
+
+    }
+    
+    $conn->query("UPDATE folders SET folderIndex = $newIndex WHERE folderID = $folderID");
+
+
+}
 
 $json_data = file_get_contents("php://input");
 $arr = json_decode($json_data, true);
@@ -56,6 +72,10 @@ if (isset($arr["content"])) /* if the content of the note has to be patched */ {
     patch_folder($conn, $arr["name"], $arr["color"], $arr["folderID"]);
 
     echo json_encode(array("message" => "Folder updated!", "code" => 200));
+
+} else if (isset($arr["oldIndex"], $arr["folderID"])) {
+
+    reorder_folders($conn, $arr["oldIndex"], $arr["newIndex"], $arr["folderID"]);
 
 }
 
