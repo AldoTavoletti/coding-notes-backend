@@ -8,7 +8,7 @@ function add_folder(mysqli $conn, string $name, string $color, int $userID): int
 
     $stmt = $conn->prepare("INSERT INTO folders (folderName, color, userID, folderIndex) VALUES (?,?,?,?)");
 
-    $stmt->bind_param("ssi", $name, $color, $userID, $folderIndex);
+    $stmt->bind_param("ssii", $name, $color, $userID, $folderIndex);
 
     $stmt->execute();
 
