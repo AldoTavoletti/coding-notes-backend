@@ -4,7 +4,7 @@
 function add_folder(mysqli $conn, string $name, string $color, int $userID): int
 {
 
-    $folderIndex = (int) $conn->query("SELECT MAX(folderIndex) AS folderIndex FROM folders WHERE userID = $userID")->fetch_assoc()["folderIndex"];
+    $folderIndex = (int) $conn->query("SELECT MAX(folderIndex) AS folderIndex FROM folders WHERE userID = $userID")->fetch_assoc()["folderIndex"] + 1;
 
     $stmt = $conn->prepare("INSERT INTO folders (folderName, color, userID, folderIndex) VALUES (?,?,?,?)");
 
