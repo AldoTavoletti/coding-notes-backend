@@ -35,6 +35,10 @@ function patch_folder(mysqli $conn, string $name, string $color, int $folderID):
 
 function reorder_folders(mysqli $conn, int $oldIndex, int $newIndex, int $folderID): void
 {
+
+    $oldIndex++;
+    $newIndex++;
+
     if ($oldIndex < $newIndex) {
        
         $conn->query("UPDATE folders SET folderIndex = folderIndex-1 WHERE folderIndex BETWEEN $oldIndex+1 AND $newIndex");
@@ -44,7 +48,7 @@ function reorder_folders(mysqli $conn, int $oldIndex, int $newIndex, int $folder
         $conn->query("UPDATE folders SET folderIndex = folderIndex+1 WHERE folderIndex BETWEEN $newIndex AND $oldIndex-1");
 
     }
-    
+
     $conn->query("UPDATE folders SET folderIndex = $newIndex WHERE folderID = $folderID");
 
 
