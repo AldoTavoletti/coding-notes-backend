@@ -22,7 +22,9 @@ function delete_element(mysqli $conn, string $elementType, int $elementID) : voi
 
     } else /* if a folder is being deleted */ {
 
-        $folderIndex= (int) $conn->query("SELECT folderIndex FROM folders WHERE folderID = $elementID")->fetch_assoc()["folderIndex"];
+        $result = $conn->query("SELECT folderIndex,userID FROM folders WHERE folderID = $elementID")->fetch_assoc();
+        $folderIndex = (int) $result["folderIndex"];
+        $userID = (int) $result["userID"]; 
         $conn->query("UPDATE folders SET folderIndex = folderIndex-1 WHERE userID = {$_SESSION['userID']} AND folderIndex > $folderIndex");
 
         //prepare the statement
