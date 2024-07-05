@@ -13,13 +13,13 @@ function delete_element(mysqli $conn, string $elementType, int $elementID) : voi
 
     if ($elementType === "note") /* if a note is being deleted */ {
         
-        $conn->query("UPDATE notes SET noteIndex=noteIndex-1 WHERE noteIndex > (SELECT noteIndex FROM notes WHERE noteID= $elementID)");
+        $conn->query("UPDATE notes SET noteIndex=noteIndex-1 WHERE noteIndex > (SELECT noteIndex FROM notes WHERE noteID = $elementID)");
         //prepare the statement
         $stmt = $conn->prepare("DELETE FROM notes WHERE noteID =?");
 
     } else /* if a folder is being deleted */ {
 
-        $conn->query("UPDATE folders SET folderIndex=folderIndex-1 WHERE folderIndex > (SELECT folderIndex FROM folders WHERE folderID= $elementID)");
+        $conn->query("UPDATE folders SET folderIndex=folderIndex-1 WHERE folderIndex > (SELECT folderIndex FROM folders WHERE folderID = $elementID)");
 
         //prepare the statement
         $stmt = $conn->prepare("DELETE FROM folders WHERE folderID =?");
