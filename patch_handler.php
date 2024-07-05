@@ -54,6 +54,27 @@ function reorder_folders(mysqli $conn, int $oldIndex, int $newIndex, int $folder
 
 }
 
+function reorder_notes(mysqli $conn, int $oldIndex, int $newIndex, int $noteID): void
+{
+
+    $oldIndex++;
+    $newIndex++;
+
+    if ($oldIndex < $newIndex) {
+
+        $conn->query("UPDATE notes SET noteIndex = noteIndex-1 WHERE noteIndex BETWEEN $oldIndex+1 AND $newIndex");
+
+    } else {
+
+        $conn->query("UPDATE notes SET noteIndex = noteIndex+1 WHERE noteIndex BETWEEN $newIndex AND $oldIndex-1");
+
+    }
+
+    $conn->query("UPDATE notes SET noteIndex = $newIndex WHERE folderID = $noteID");
+
+
+}
+
 $json_data = file_get_contents("php://input");
 $arr = json_decode($json_data, true);
 
@@ -82,6 +103,12 @@ if (isset($arr["content"])) /* if the content of the note has to be patched */ {
     reorder_folders($conn, $arr["oldIndex"], $arr["newIndex"], $arr["folderID"]);
 
     echo json_encode(array("message" => "Folders reordered!", "code" => 200));
+
+}else if(isset($arr["oldIndex"], $arr["noteID"])){
+
+    reorder_notes($conn, $arr["oldIndex"], $arr["newIndex"], $arr["notesID"]);
+
+    echo json_encode(array("message" => "Notes reordered!", "code" => 200));
 
 }
 
