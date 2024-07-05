@@ -17,7 +17,7 @@ function get_all_folders_and_notes(mysqli $conn): ?array
     $folders = $result->fetch_all(MYSQLI_ASSOC);
 
     // get all the notes of the user's folders. The statement is prepared only once.
-    $stmt = $conn->prepare("SELECT * FROM notes WHERE folderID=?/*ORDER BY noteIndex*/");
+    $stmt = $conn->prepare("SELECT * FROM notes WHERE folderID=? ORDER BY noteIndex");
 
     // $folderID doesn't have a value now, but it gets assigned a value in the for loop. When the statement gets executed, the compiler looks for the binded parameters and uses the current value it is assigned to.
     $stmt->bind_param("i", $folderID);
