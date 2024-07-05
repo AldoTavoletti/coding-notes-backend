@@ -25,6 +25,9 @@ function delete_element(mysqli $conn, string $elementType, int $elementID, $pare
         //prepare the statement
         $stmt = $conn->prepare("DELETE FROM folders WHERE folderID =?");
 
+    echo json_encode(array("folderindex" => $folderIndex, "code" => 200, "$conn->error"));
+
+
     }
 
     // bind the parameter
@@ -48,7 +51,7 @@ if (isset($arr["elementType"])) /* if a note or a folder has to be deleted */{
 
     }
     
-    echo json_encode(array("message" => "Element deleted!", "code" => 200));
+    // echo json_encode(array("message" => "Element deleted!", "code" => 200));
 
 } else if (isset($arr["deleteUser"])) /* if a user has to be deleted */ {
 
