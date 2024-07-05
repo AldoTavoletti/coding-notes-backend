@@ -12,8 +12,16 @@ function delete_element(mysqli $conn, string $elementType, int $elementID, $pare
 {
 
     if ($elementType === "note") /* if a note is being deleted */ {
-        $noteIndex = (int) $conn->query("SELECT noteIndex FROM notes WHERE noteID = $elementID")->fetch_assoc()["noteIndex"];
-        $conn->query("UPDATE notes SET noteIndex = noteIndex-1 WHERE folderID = $parentElementID AND noteIndex > $noteIndex");
+
+        $stmt = $conn->prepare("SELECT noteIndex FROM notes WHERE noteID = ?");
+        $stmt->bind_param("i",$elementID);
+        $stmt->execute();
+        $noteIndex = $stmt->get_result()->fetch_assoc()["noteIndex"];
+        
+        $stmt = $conn->prepare("UPDATE notes SET noteIndex = noteIndex-1 WHERE folderID = ? AND noteIndex > ?");
+        $stmt->bind_param("ii", $parentElementID, $noteIndex);
+        $stmt->execute();
+        
         //prepare the statement
         $stmt = $conn->prepare("DELETE FROM notes WHERE noteID =?");
 
