@@ -8,19 +8,19 @@ function delete_user(mysqli $conn) : void
     $stmt->execute();
 }
 
-function delete_element(mysqli $conn, string $elementType, int $elementID) : void
+function delete_element(mysqli $conn, string $elementType, int $elementID, $parentElementID=null) : void
 {
 
     if ($elementType === "note") /* if a note is being deleted */ {
         $noteIndex = $conn->query("SELECT noteIndex FROM notes WHERE noteID = $elementID")->fetch_assoc()["noteIndex"];
-        $conn->query("UPDATE notes SET noteIndex = noteIndex-1 WHERE noteIndex > $noteIndex");
+        $conn->query("UPDATE notes SET noteIndex = noteIndex-1 WHERE folderID = $parentElementID AND noteIndex > $noteIndex");
         //prepare the statement
         $stmt = $conn->prepare("DELETE FROM notes WHERE noteID =?");
 
     } else /* if a folder is being deleted */ {
 
         $folderIndex=$conn->query("SELECT folderIndex FROM folders WHERE folderID = $elementID")->fetch_assoc()["folderIndex"];
-        $conn->query("UPDATE folders SET folderIndex = folderIndex-1 WHERE folderIndex > $folderIndex");
+        $conn->query("UPDATE folders SET folderIndex = folderIndex-1 WHERE userID = {$_SESSION["userID"]} AND folderIndex > $folderIndex");
 
         //prepare the statement
         $stmt = $conn->prepare("DELETE FROM folders WHERE folderID =?");

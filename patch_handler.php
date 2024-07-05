@@ -41,11 +41,11 @@ function reorder_folders(mysqli $conn, int $oldIndex, int $newIndex, int $folder
 
     if ($oldIndex < $newIndex) {
        
-        $conn->query("UPDATE folders SET folderIndex = folderIndex-1 WHERE folderIndex BETWEEN $oldIndex+1 AND $newIndex");
+        $conn->query("UPDATE folders SET folderIndex = folderIndex-1 WHERE userID = {$_SESSION['userID']} AND folderIndex BETWEEN $oldIndex+1 AND $newIndex");
 
     } else {
 
-        $conn->query("UPDATE folders SET folderIndex = folderIndex+1 WHERE folderIndex BETWEEN $newIndex AND $oldIndex-1");
+        $conn->query("UPDATE folders SET folderIndex = folderIndex+1 WHERE userID = {$_SESSION['userID']} AND folderIndex BETWEEN $newIndex AND $oldIndex-1");
 
     }
 
@@ -54,7 +54,7 @@ function reorder_folders(mysqli $conn, int $oldIndex, int $newIndex, int $folder
 
 }
 
-function reorder_notes(mysqli $conn, int $oldIndex, int $newIndex, int $noteID): void
+function reorder_notes(mysqli $conn, int $oldIndex, int $newIndex, int $noteID, int $folderID): void
 {
 
     $oldIndex++;
@@ -62,15 +62,15 @@ function reorder_notes(mysqli $conn, int $oldIndex, int $newIndex, int $noteID):
 
     if ($oldIndex < $newIndex) {
 
-        $conn->query("UPDATE notes SET noteIndex = noteIndex-1 WHERE noteIndex BETWEEN $oldIndex+1 AND $newIndex");
+        $conn->query("UPDATE notes SET noteIndex = noteIndex-1 WHERE folderID = $folderID AND noteIndex BETWEEN $oldIndex+1 AND $newIndex");
 
     } else {
 
-        $conn->query("UPDATE notes SET noteIndex = noteIndex+1 WHERE noteIndex BETWEEN $newIndex AND $oldIndex-1");
+        $conn->query("UPDATE notes SET noteIndex = noteIndex+1 WHERE folderID = $folderID AND noteIndex BETWEEN $newIndex AND $oldIndex-1");
 
     }
 
-    $conn->query("UPDATE notes SET noteIndex = $newIndex WHERE folderID = $noteID");
+    $conn->query("UPDATE notes SET noteIndex = $newIndex WHERE noteID = $noteID");
 
 
 }
@@ -98,17 +98,18 @@ if (isset($arr["content"])) /* if the content of the note has to be patched */ {
 
     echo json_encode(array("message" => "Folder updated!", "code" => 200));
 
+
+}else if(isset($arr["oldIndex"], $arr["noteID"])){
+
+    reorder_notes($conn, $arr["oldIndex"], $arr["newIndex"], $arr["noteID"], $arr["folderID"]);
+
+    echo json_encode(array("message" => "Notes reordered!", "code" => 200));
+
 } else if (isset($arr["oldIndex"], $arr["folderID"])) {
 
     reorder_folders($conn, $arr["oldIndex"], $arr["newIndex"], $arr["folderID"]);
 
     echo json_encode(array("message" => "Folders reordered!", "code" => 200));
-
-}else if(isset($arr["oldIndex"], $arr["noteID"])){
-
-    reorder_notes($conn, $arr["oldIndex"], $arr["newIndex"], $arr["noteID"]);
-
-    echo json_encode(array("message" => "Notes reordered!", "code" => 200));
 
 }
 
