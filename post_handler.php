@@ -18,10 +18,11 @@ function add_folder(mysqli $conn, string $name, string $color, int $userID): int
 
 function add_note(mysqli $conn, string $title, int $folderID): int
 {
+    $noteIndex = (int) $conn->query("SELECT MAX(noteIndex) AS noteIndex FROM notes WHERE folderID = $folderID")->fetch_assoc()["noteIndex"] + 1;
 
-    $stmt = $conn->prepare("INSERT INTO notes (title, folderID) VALUES (?,?)");
+    $stmt = $conn->prepare("INSERT INTO notes (title, folderID, noteIndex) VALUES (?,?,?)");
 
-    $stmt->bind_param("si", $title, $folderID);
+    $stmt->bind_param("sii", $title, $folderID);
 
     $stmt->execute();
 

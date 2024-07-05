@@ -13,7 +13,7 @@ function delete_element(mysqli $conn, string $elementType, int $elementID) : voi
 
     if ($elementType === "note") /* if a note is being deleted */ {
         
-        //? $conn->query("UPDATE notes SET noteIndex=noteIndex-1 WHERE noteIndex > (SELECT noteIndex FROM notes WHERE noteID= $elementID)");
+        $conn->query("UPDATE notes SET noteIndex=noteIndex-1 WHERE noteIndex > (SELECT noteIndex FROM notes WHERE noteID= $elementID)");
         //prepare the statement
         $stmt = $conn->prepare("DELETE FROM notes WHERE noteID =?");
 
