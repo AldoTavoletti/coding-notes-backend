@@ -22,7 +22,7 @@ function add_note(mysqli $conn, string $title, int $folderID): int
 
     $stmt = $conn->prepare("INSERT INTO notes (title, folderID, noteIndex) VALUES (?,?,?)");
 
-    $stmt->bind_param("sii", $title, $folderID);
+    $stmt->bind_param("sii", $title, $folderID, $noteIndex);
 
     $stmt->execute();
 
