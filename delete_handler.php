@@ -40,7 +40,13 @@ $arr = json_decode($json_data, true);
 
 if (isset($arr["elementType"])) /* if a note or a folder has to be deleted */{
 
-    delete_element($conn, $arr["elementType"], $arr["elementID"]);
+    if ($arr["elementType"] === "note") {
+        delete_element($conn, $arr["elementType"], $arr["elementID"],$arr["folderID"]);
+    }else{
+        delete_element($conn, $arr["elementType"], $arr["elementID"]);
+
+
+    }
     
     echo json_encode(array("message" => "Element deleted!", "code" => 200));
 
