@@ -1,4 +1,5 @@
 <?php
+session_start();
 function delete_user(mysqli $conn) : void
 {
     $stmt = $conn->prepare("DELETE FROM users WHERE userID = ?");
