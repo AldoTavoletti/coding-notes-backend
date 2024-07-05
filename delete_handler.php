@@ -8,20 +8,15 @@ function delete_user(mysqli $conn) : void
     $stmt->execute();
 }
 
-function delete_element(mysqli $conn, string $elementType, int $elementID, $parentElementID=null) : void
+function delete_element(mysqli $conn, string $elementType, int $elementID) : void
 {
 
     if ($elementType === "note") /* if a note is being deleted */ {
-
-        $stmt = $conn->prepare("SELECT noteIndex FROM notes WHERE noteID = ?");
-        $stmt->bind_param("i",$elementID);
-        $stmt->execute();
-        $noteIndex = $stmt->get_result()->fetch_assoc()["noteIndex"];
         
-        $stmt = $conn->prepare("UPDATE notes SET noteIndex = noteIndex-1 WHERE folderID = ? AND noteIndex > ?");
-        $stmt->bind_param("ii", $parentElementID, $noteIndex);
-        $stmt->execute();
-        
+        $result = $conn->query("SELECT noteIndex,folderID FROM notes WHERE noteID = $elementID")->fetch_assoc();
+        $noteIndex = (int) $result["noteIndex"];
+        $folderID = (int) $result["folderID"];
+        $conn->query("UPDATE notes SET noteIndex = noteIndex-1 WHERE folderID = $folderID AND noteIndex > $noteIndex");
         //prepare the statement
         $stmt = $conn->prepare("DELETE FROM notes WHERE noteID =?");
 
@@ -48,13 +43,9 @@ $arr = json_decode($json_data, true);
 
 if (isset($arr["elementType"])) /* if a note or a folder has to be deleted */{
 
-    if ($arr["elementType"] === "note") {
-        delete_element($conn, $arr["elementType"], $arr["elementID"],$arr["folderID"]);
-    }else{
         delete_element($conn, $arr["elementType"], $arr["elementID"]);
 
 
-    }
     
     echo json_encode(array("message" => "Element deleted!", "code" => 200));
 
