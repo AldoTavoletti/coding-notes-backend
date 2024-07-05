@@ -106,7 +106,7 @@ if (isset($arr["content"])) /* if the content of the note has to be patched */ {
 
 }else if(isset($arr["oldIndex"], $arr["noteID"])){
 
-    reorder_notes($conn, $arr["oldIndex"], $arr["newIndex"], $arr["notesID"]);
+    reorder_notes($conn, $arr["oldIndex"], $arr["newIndex"], $arr["noteID"]);
 
     echo json_encode(array("message" => "Notes reordered!", "code" => 200));
 
