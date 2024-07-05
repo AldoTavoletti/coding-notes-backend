@@ -81,5 +81,7 @@ if (isset($arr["content"])) /* if the content of the note has to be patched */ {
 
     reorder_folders($conn, $arr["oldIndex"], $arr["newIndex"], $arr["folderID"]);
 
+    echo json_encode(array("message" => "Folders reordered!", "code" => 200));
+
 }
 
