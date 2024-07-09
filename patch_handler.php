@@ -75,6 +75,13 @@ function reorder_notes(mysqli $conn, int $oldIndex, int $newIndex, int $noteID, 
 
 }
 
+function move_note(mysqli $conn, int $folderID, int $noteID):void
+{
+
+$conn->query("UPDATE notes SET folderID = $folderID WHERE noteID = $noteID");
+
+}
+
 $json_data = file_get_contents("php://input");
 $arr = json_decode($json_data, true);
 
@@ -110,6 +117,12 @@ if (isset($arr["content"])) /* if the content of the note has to be patched */ {
     reorder_folders($conn, $arr["oldIndex"], $arr["newIndex"], $arr["folderID"]);
 
     echo json_encode(array("message" => "Folders reordered!", "code" => 200));
+
+}else if(isset($arr["action"]) && $arr["action"]==="move-note"){
+
+    move_note($conn, $arr["folderID"], $arr["noteID"]);
+
+    echo json_encode(array("message" => "Note moved!", "code" => 200));
 
 }
 
