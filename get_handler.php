@@ -169,7 +169,7 @@ function get_possible_notes(mysqli $conn, string $inputContent)
 
     $result = $conn->query("SELECT * FROM notes n INNER JOIN folders f ON n.folderID=f.folderID WHERE f.userID={$_SESSION['userID']} AND n.title LIKE '%$inputContent%'");
 
-    return $result->fetch_all(MYSQLI_ASSOC);
+    return $result ? $result->fetch_all(MYSQLI_ASSOC): null;
 
     
 
