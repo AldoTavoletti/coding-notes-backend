@@ -169,7 +169,7 @@ function get_possible_notes(mysqli $conn, string $inputContent)
 
     $result = $conn->query("SELECT * FROM notes WHERE title LIKE %$inputContent%");
 
-    return $result->fetch_all(MYSQLI_ASSOC);
+    return $result;
 
     
 
