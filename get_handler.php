@@ -164,7 +164,16 @@ function logout(): void
 
 }
 
+function get_possible_notes(mysqli $conn, string $inputContent)
+{
 
+    $result = $conn->query("SELECT * FROM notes WHERE title LIKE %$inputContent%");
+
+    return $result->fetch_all(MYSQLI_ASSOC);
+
+    
+
+}
 
 
 
@@ -196,6 +205,12 @@ if (isset($_GET["retrieve"]) && $_GET["retrieve"] === "all") {
 } else if (isset($_GET["logout"]) && $_GET["logout"] === "true") {
 
     logout();
+
+} else if(isset($_GET["search"])){
+
+    $notes = get_possible_notes($conn, $_GET["search"]);
+
+    echo json_encode($notes);
 
 }
 
