@@ -167,11 +167,11 @@ function logout(): void
 function get_possible_notes(mysqli $conn, string $inputContent)
 {
 
-    if($inputContent === "") return null;
+    if($inputContent === "") return [];
 
     $result = $conn->query("SELECT * FROM notes n INNER JOIN folders f ON n.folderID=f.folderID WHERE f.userID={$_SESSION['userID']} AND n.title LIKE '%$inputContent%'");
 
-    return $result ? $result->fetch_all(MYSQLI_ASSOC): null;
+    return $result->fetch_all(MYSQLI_ASSOC);
 
     
 
