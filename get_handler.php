@@ -167,13 +167,19 @@ function logout(): void
 function get_possible_notes(mysqli $conn, string $inputContent)
 {
 
-    if($inputContent === "") return [];
+    if ($inputContent === "")
+        return [];
 
-    $result = $conn->query("SELECT * FROM notes n INNER JOIN folders f ON n.folderID=f.folderID WHERE f.userID={$_SESSION['userID']} AND n.title LIKE '%$inputContent%'");
+    $stmt = $conn->prepare("SELECT * FROM notes n INNER JOIN folders f ON n.folderID=f.folderID WHERE f.userID=? AND n.title LIKE ?");
+    $inputContent = '%' . $inputContent . '%';
+    $stmt->bind_param('is', $_SESSION['userID'], $inputContent);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
+    // Fetch all results with original data types
     return $result->fetch_all(MYSQLI_ASSOC);
 
-    
+
 
 }
 
@@ -197,18 +203,18 @@ if (isset($_GET["retrieve"]) && $_GET["retrieve"] === "all") {
 
     if (check_logged_in($conn)) {
         echo json_encode(array("message" => "The user is logged in!", "username" => $_SESSION["username"], "code" => 200));
-    }else{
+    } else {
         echo json_encode(array("message" => "The user is not logged in!", "code" => 401));
 
     }
 
-    
+
 
 } else if (isset($_GET["logout"]) && $_GET["logout"] === "true") {
 
     logout();
 
-} else if(isset($_GET["search"])){
+} else if (isset($_GET["search"])) {
 
     $notes = get_possible_notes($conn, $_GET["search"]);
 
