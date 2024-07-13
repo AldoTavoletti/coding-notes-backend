@@ -18,8 +18,9 @@ function patch_note_title(mysqli $conn, string $title, int $noteID): void
 
     $stmt->bind_param("si", $title, $noteID);
 
-    $stmt->execute();
+    
 
+    echo json_encode(array("result"=>$stmt->execute()));
 }
 
 function patch_folder(mysqli $conn, string $name, string $color, int $folderID): void
