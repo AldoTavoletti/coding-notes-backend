@@ -20,7 +20,7 @@ function patch_note_title(mysqli $conn, string $title, int $noteID): void
 
     
 
-    echo json_encode(array("result"=>$stmt->execute()));
+    echo json_encode(array("result"=>$stmt->execute(), "message" => "Title updated!", "code" => 200, "title" => $title));
 }
 
 function patch_folder(mysqli $conn, string $name, string $color, int $folderID): void
@@ -97,7 +97,7 @@ if (isset($arr["content"])) /* if the content of the note has to be patched */ {
 
     patch_note_title($conn, $arr["title"], $arr["noteID"]);
 
-    echo json_encode(array("message" => "Title updated!", "code" => 200, "title"=>$arr["title"]));
+    // echo json_encode(array("message" => "Title updated!", "code" => 200, "title"=>$arr["title"]));
 
 
 } else if (isset($arr["name"], $arr["color"], $arr["folderID"])) /* if a folder has to be patched */ {
