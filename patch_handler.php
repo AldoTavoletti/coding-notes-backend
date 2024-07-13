@@ -96,7 +96,7 @@ if (isset($arr["content"])) /* if the content of the note has to be patched */ {
 
     patch_note_title($conn, $arr["title"], $arr["noteID"]);
 
-    echo json_encode(array("message" => "Title updated!", "code" => 200));
+    echo json_encode(array("message" => "Title updated!", "code" => 200, "title"=>$arr["title"]));
 
 
 } else if (isset($arr["name"], $arr["color"], $arr["folderID"])) /* if a folder has to be patched */ {
