@@ -18,10 +18,9 @@ function patch_note_title(mysqli $conn, string $title, int $noteID): void
 
     $stmt->bind_param("si", $title, $noteID);
 
-    if (!connection_aborted()) {
-        $stmt->execute();
-    }
+    $stmt->execute();
 
+    $_SESSION[time()] = $title;
 }
 
 function patch_folder(mysqli $conn, string $name, string $color, int $folderID): void
@@ -42,7 +41,7 @@ function reorder_folders(mysqli $conn, int $oldIndex, int $newIndex, int $folder
     $newIndex++;
 
     if ($oldIndex < $newIndex) {
-       
+
         $conn->query("UPDATE folders SET folderIndex = folderIndex-1 WHERE userID = {$_SESSION['userID']} AND folderIndex BETWEEN $oldIndex+1 AND $newIndex");
 
     } else {
@@ -77,10 +76,10 @@ function reorder_notes(mysqli $conn, int $oldIndex, int $newIndex, int $noteID, 
 
 }
 
-function move_note(mysqli $conn, int $folderID, int $noteID):void
+function move_note(mysqli $conn, int $folderID, int $noteID): void
 {
 
-$conn->query("UPDATE notes SET folderID = $folderID WHERE noteID = $noteID");
+    $conn->query("UPDATE notes SET folderID = $folderID WHERE noteID = $noteID");
 
 }
 
@@ -98,7 +97,8 @@ if (isset($arr["content"])) /* if the content of the note has to be patched */ {
 
     patch_note_title($conn, $arr["title"], $arr["noteID"]);
 
-    echo json_encode(array("message" => "Title updated!", "code" => 200, "title"=>$arr["title"]));
+    // echo json_encode(array("message" => "Title updated!", "code" => 200, "title" => $arr["title"]));
+    echo json_encode($_SESSION);
 
 
 } else if (isset($arr["name"], $arr["color"], $arr["folderID"])) /* if a folder has to be patched */ {
@@ -108,7 +108,7 @@ if (isset($arr["content"])) /* if the content of the note has to be patched */ {
     echo json_encode(array("message" => "Folder updated!", "code" => 200));
 
 
-}else if(isset($arr["oldIndex"], $arr["noteID"])){
+} else if (isset($arr["oldIndex"], $arr["noteID"])) {
 
     reorder_notes($conn, $arr["oldIndex"], $arr["newIndex"], $arr["noteID"], $arr["folderID"]);
 
@@ -120,7 +120,7 @@ if (isset($arr["content"])) /* if the content of the note has to be patched */ {
 
     echo json_encode(array("message" => "Folders reordered!", "code" => 200));
 
-}else if(isset($arr["action"]) && $arr["action"]==="move-note"){
+} else if (isset($arr["action"]) && $arr["action"] === "move-note") {
 
     move_note($conn, $arr["folderID"], $arr["noteID"]);
 
