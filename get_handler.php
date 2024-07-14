@@ -172,6 +172,9 @@ function get_possible_notes(mysqli $conn, string $inputContent)
     
     $inputContent = urldecode($inputContent);
 
+    $inputContent = str_replace("%","\%", $inputContent);
+    $inputContent = str_replace("_", "\_", $inputContent);
+
 
     $stmt = $conn->prepare("SELECT n.noteID, n.title, f.folderName, f.folderID FROM notes n INNER JOIN folders f ON n.folderID=f.folderID WHERE f.userID=? AND n.title LIKE ?");
     $inputContent = '%' . $inputContent . '%';
