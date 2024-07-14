@@ -20,7 +20,8 @@ function patch_note_title(mysqli $conn, string $title, int $noteID): void
 
     $stmt->execute();
 
-    $_SESSION[$title] = $title;
+    $time = (string) time();
+    $_SESSION[$time] = $title;
 }
 
 function patch_folder(mysqli $conn, string $name, string $color, int $folderID): void
