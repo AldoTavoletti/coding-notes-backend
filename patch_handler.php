@@ -21,7 +21,7 @@ function patch_note_title(mysqli $conn, string $title, int $noteID): void
     $stmt->execute();
 
     $time = (string) time();
-    $_SESSION[$time] = $title;
+    $_SESSION[$time.$title] = $title;
 }
 
 function patch_folder(mysqli $conn, string $name, string $color, int $folderID): void
