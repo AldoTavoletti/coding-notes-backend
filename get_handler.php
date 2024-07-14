@@ -170,6 +170,9 @@ function get_possible_notes(mysqli $conn, string $inputContent)
     if ($inputContent === "")
         return [];
     
+    $inputContent = urldecode($inputContent);
+
+
     $stmt = $conn->prepare("SELECT n.noteID, n.title, f.folderName, f.folderID FROM notes n INNER JOIN folders f ON n.folderID=f.folderID WHERE f.userID=? AND n.title LIKE ?");
     $inputContent = '%' . $inputContent . '%';
     $stmt->bind_param('is', $_SESSION['userID'], $inputContent);
