@@ -36,8 +36,6 @@ function patch_folder(mysqli $conn, string $name, string $color, int $folderID):
 function reorder_folders(mysqli $conn, int $oldIndex, int $newIndex, int $folderID): void
 {
 
-    $oldIndex++;
-    $newIndex++;
 
     if ($oldIndex < $newIndex) {
 
