@@ -57,9 +57,6 @@ function reorder_folders(mysqli $conn, int $oldIndex, int $newIndex, int $folder
 function reorder_notes(mysqli $conn, int $oldIndex, int $newIndex, int $noteID, int $folderID): void
 {
 
-    $oldIndex++;
-    $newIndex++;
-
     if ($oldIndex < $newIndex) {
 
         $conn->query("UPDATE notes SET noteIndex = noteIndex-1 WHERE folderID = $folderID AND noteIndex BETWEEN $oldIndex+1 AND $newIndex");
