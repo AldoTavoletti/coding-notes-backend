@@ -6,7 +6,7 @@ function get_all_folders_and_notes(mysqli $conn): ?array
     $folderID = null;
 
     // get the user's folders
-    $stmt = $conn->prepare("SELECT * FROM folders WHERE userID=? ORDER BY folderIndex");
+    $stmt = $conn->prepare("SELECT folderID, folderName, color, userID FROM folders WHERE userID=? ORDER BY folderIndex");
     $stmt->bind_param("i", $_SESSION["userID"]);
     $stmt->execute();
 
@@ -16,7 +16,7 @@ function get_all_folders_and_notes(mysqli $conn): ?array
     // fetch the whole result into an associative array
     $folders = $result->fetch_all(MYSQLI_ASSOC);
 
-    $stmt = $conn->prepare("SELECT * FROM notes WHERE folderID=? ORDER BY noteIndex");
+    $stmt = $conn->prepare("SELECT noteID, title, content, folderID FROM notes WHERE folderID=? ORDER BY noteIndex");
 
     // $folderID doesn't have a value now, but it gets assigned a value in the for loop. When the statement gets executed, the compiler looks for the binded parameters and uses the current value it is assigned to.
     $stmt->bind_param("i", $folderID);
@@ -45,7 +45,7 @@ function get_single_note(mysqli $conn): ?array
 {
 
     // get the requested note
-    $stmt = $conn->prepare("SELECT * FROM notes WHERE noteID =?");
+    $stmt = $conn->prepare("SELECT noteID, title, content, folderID FROM notes WHERE noteID =?");
 
     $stmt->bind_param("i", $_GET["note"]);
 
