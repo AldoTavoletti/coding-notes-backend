@@ -6,7 +6,7 @@ function add_folder(mysqli $conn, string $name, string $color, int $userID): int
 
     $folderIndex = $conn->query("SELECT MAX(folderIndex) AS folderIndex FROM folders WHERE userID = $userID")->fetch_assoc()["folderIndex"];
 
-    $folderIndex = $folderIndex ? (int) $folderIndex + 1 : 0;
+    $folderIndex = $folderIndex !== null ? (int) $folderIndex + 1 : 0;
 
     $stmt = $conn->prepare("INSERT INTO folders (folderName, color, userID, folderIndex) VALUES (?,?,?,?)");
 
@@ -22,7 +22,7 @@ function add_note(mysqli $conn, string $title, int $folderID): int
 {
     $noteIndex = $conn->query("SELECT MAX(noteIndex) AS noteIndex FROM notes WHERE folderID = $folderID")->fetch_assoc()["noteIndex"];
 
-    $noteIndex = $noteIndex ? (int) $noteIndex + 1 : 0;
+    $noteIndex = $noteIndex !== null ? (int) $noteIndex + 1 : 0;
 
     $stmt = $conn->prepare("INSERT INTO notes (title, folderID, noteIndex) VALUES (?,?,?)");
 
